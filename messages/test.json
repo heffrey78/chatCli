@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": ".open google-search"
+  },
+  {
+    "role": "assistant",
+    "content": "I'm sorry, I cannot directly perform a Google search as I am an AI language model, and I'm not able to browse the web. However, feel free to ask me any questions, and I'll do my best to provide you with relevant information based on my knowledge."
+  }
+]

@@ -1,0 +1,18 @@
+# Filename: .gitignore
+
+# Ignore node_modules folder (dependencies)
+node_modules/
+
+# Ignore environment variables file
+.env
+
+# Ignore operating system and editor related files
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+
+# Ignore build and distribution folders (if applicable)
+dist/
+build/

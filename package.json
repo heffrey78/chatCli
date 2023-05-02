@@ -1,0 +1,21 @@
+{
+  "name": "chat-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "cheerio": "^1.0.0-rc.12",
+    "child_process": "^1.0.2",
+    "dotenv": "^16.0.3",
+    "node-powershell": "^5.0.1",
+    "openai": "^3.2.1"
+  }
+}

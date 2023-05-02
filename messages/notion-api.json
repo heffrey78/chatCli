@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "Let's write an Express app that takes in a journal entry and posts it to a table using the Notion API. It should return the link to the new page. Act as a nodejs and express expert. Use best practices. For now, only return a numebered list of the highest level steps. No sub-bullets."
+  },
+  {
+    "role": "assistant",
+    "content": "1. Set up a new Node.js project, initialize npm, and install necessary dependencies such as express, axios, and dotenv.\n\n2. Create a `.env` file to store and load your Notion API key and database ID securely.\n\n3. Initialize an Express app and set its listen port.\n\n4. Set up the Notion API client to connect and authenticate with the Notion API using axios and your API key.\n\n5. Implement a function to create the new journal entry in the Notion table (database) using axios to make a POST request to the Notion API.\n\n6. Set up an express router to handle incoming journal entry requests using the POST HTTP method.\n\n7. Implement middleware to parse the request data (i.e., journal entry text) as JSON.\n\n8. Inside the POST route handler function, pass the parsed data (the journal entry) to the previously implemented Notion API function.\n\n9. Check the response from the Notion API function for successful pag creation and extract the new page's URL.\n\n10. Return the new page's URL as the JSON response to the client.\n\n11. Set up error handling middleware in the Express app to catch unexpected exceptions and return appropriate error messages.\n\n12. Run the Express app and test your implementation by sending a journal entry POST request using a tool like Postman or curl.\n\n13. Implement additional security and validation features, like rate limiting and input validation, if desired.\n\n14. Optionally, deploy the app on a hosting platform like Heroku or Vercel."
+  }
+]
