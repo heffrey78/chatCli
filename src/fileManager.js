@@ -44,12 +44,12 @@ async function saveToFile(filename, content) {
     }
 
     const dir = path.dirname(filename);
-    const test1 = path.resolve(process.cwd());
-
+    const file = path.basename(filename);
+    
     const dirname = path.isAbsolute(dir) ? dir : path.join(path.resolve(process.cwd()), dir);
     await createFolderIfNotExists(`${dirname}`);
-    await fs.writeFile(`${path.join(dirname, filename)}`, JSON.stringify(content, null, 2));
-    console.log(`Content saved to ${filename}`);
+    await fs.writeFile(`${path.join(dirname, file)}`, JSON.stringify(content, null, 2));
+    console.log(`Content saved to ${file}`);
   } catch (error) {
     console.error("Error saving to file:", error);
   }

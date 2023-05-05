@@ -22,11 +22,11 @@ async function handlePrompt(prompt, messages) {
         if(config.code === 'true') {
           if(messages.findIndex(message => message.role === 'system') === -1){
             const systemInfo = getSystemInfo();
-            const systemMessage = ' start by creating a directory structure. give the project and appropriate name.' +
-             ` unless otherwise specificed, development should primarly target a system with the following information: ${JSON.stringify(systemInfo)} \r\n` +
-            ' act as an expert in mentioned technologies. use best practices. \r\n' +
-            ' all code examples should start the file with a comment containing the appropriate filepath and file name. \r\n' +  
-            ' all command examples or node executions should start with a comment that indicates the appropriate filepath and file name.'
+            const systemMessage = ' Give the project and appropriate name. Devise an directory structure using best practices.' +
+             ` Unless otherwise specificed, development should target a system with the following information: ${JSON.stringify(systemInfo)} \r\n` +
+            ' Act as an expert in mentioned technologies. Use best practices for each technology and use SOLID principles. \r\n' +
+            ' All code examples should have a comment at the top containing the file path and file name. \r\n' +  
+            ' All command examples. shell scripts, etc should start with a comment that indicates the appropriate file path and file name.'
             messages.push({ role: "system", content: systemMessage });
           } 
                   
