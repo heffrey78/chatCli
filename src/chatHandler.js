@@ -3,12 +3,11 @@ const { saveMessagesToFile, readMessagesFromFile, saveConfigToFile, readConfigFr
 const { searchAndGetSummarizedItems, search } = require('./google');
 const extractMainContent = require('./webHandler');
 const getSystemInfo = require('./osInformation');
+const { list } = require("./consoleManager");
+const extractAndWriteCodeToFile = require("./codeManager");
 
 async function handlePrompt(prompt, messages) {
     const config = await readConfigFromFile();
-    if(messages.length == 0){
-      console.table(config);
-    }
     const parsedPrompt = parsePrompt(prompt);
     let command = null;
     let arg = null;
@@ -21,12 +20,16 @@ async function handlePrompt(prompt, messages) {
 
     if (!command){
         if(config.code === 'true') {
-          const systemInfo = getSystemInfo();
-          prompt += ' start by creating a directory structure. give the project and appropriate name.';
-          prompt += ` unless otherwise specificed, development should primarly target a system with the following information: ${JSON.stringify(systemInfo)} \r\n`;
-          prompt += ' act as an expert in mentioned technologies. use best practices. \r\n'
-          prompt += ' all code examples should start the file with a comment containing the appropriate filepath and file name. \r\n' +  
-          ' all command examples or node executions should start with a comment that indicates the appropriate filepath and file name.'
+          if(messages.findIndex(message => message.role === 'system') === -1){
+            const systemInfo = getSystemInfo();
+            const systemMessage = ' start by creating a directory structure. give the project and appropriate name.' +
+             ` unless otherwise specificed, development should primarly target a system with the following information: ${JSON.stringify(systemInfo)} \r\n` +
+            ' act as an expert in mentioned technologies. use best practices. \r\n' +
+            ' all code examples should start the file with a comment containing the appropriate filepath and file name. \r\n' +  
+            ' all command examples or node executions should start with a comment that indicates the appropriate filepath and file name.'
+            messages.push({ role: "system", content: systemMessage });
+          } 
+                  
           messages.push({ role: "user", content: prompt });
           response = await getCodeCompletion(messages);
       } else {
@@ -38,9 +41,16 @@ async function handlePrompt(prompt, messages) {
       console.log("Assistant:", response);
     } else if (command === 'SAVE') {
       await saveMessagesToFile(arg, messages);
-    } else if (command === 'OPEN') {
-      messages = await readMessagesFromFile(arg);
+    } else if (command === 'OPEN') {      
+      const readMessages = await readMessagesFromFile(arg);
+      readMessages.forEach((message) => {
+        messages.push({ role: message.role, content: message.content });
+      });
       console.log(`Loaded messages from ${arg}.json`);
+    } else if (command === 'LIST') {
+      if(messages){
+        console.log(list(messages));
+      }
     } else if (command === 'CLEAR') {
       messages = [];
       console.log(`Cleared messages from memory`);
@@ -57,6 +67,9 @@ async function handlePrompt(prompt, messages) {
         let config = await readConfigFromFile();
         config.code = arg;
         await saveConfigToFile(config);
+    } else if (command ==='DUMPCODE') {
+      console.log("Extracting code from message");
+      await extractAndWriteCodeToFile(messages[arg].content, "./output/");
     } else if (command ==='EXECUTE') {
         let response = await executeShellScript(arg);
         console.log(response);
@@ -93,6 +106,7 @@ async function handlePrompt(prompt, messages) {
   
     return { command: null, arg: null, quotedArg: null };
   }
+
 
  module.exports = {
     parsePrompt,

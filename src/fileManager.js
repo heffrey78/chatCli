@@ -1,10 +1,10 @@
-const fs = require("fs").promises;
 const { exec } = require("child_process");
+const fs = require("fs").promises;
+const path = require('path');
 const util = require('util');
 const execPromise = util.promisify(exec);
 const { PowerShell } = require('node-powershell');
 const getSystemInfo = require('./osInformation');
-const { list } = require("./consoleManager");
 
 async function readMessagesFromFile(filename) {
   const messages = await readFromFile(`messages/${filename}`);
@@ -18,7 +18,10 @@ async function readConfigFromFile() {
 
 async function readFromFile(filename) {
   try {
-    const data = await fs.readFile(`./${filename}.json`, "utf-8");
+    if (!filename.includes('.')) {
+      filename += ".json";
+    }
+    const data = await fs.readFile(`./${filename}`, "utf-8");
     return JSON.parse(data);
   } catch (error) {
     console.error("Error reading from file:", error);
@@ -40,13 +43,29 @@ async function saveToFile(filename, content) {
       filename += ".json";
     }
 
-    await fs.writeFile(`./${filename}`, JSON.stringify(content, null, 2));
+    const dir = path.dirname(filename);
+    const test1 = path.resolve(process.cwd());
+
+    const dirname = path.isAbsolute(dir) ? dir : path.join(path.resolve(process.cwd()), dir);
+    await createFolderIfNotExists(`${dirname}`);
+    await fs.writeFile(`${path.join(dirname, filename)}`, JSON.stringify(content, null, 2));
     console.log(`Content saved to ${filename}`);
   } catch (error) {
     console.error("Error saving to file:", error);
   }
 }
 
+async function createFolderIfNotExists(directoryPath) {
+
+      fs.mkdir(directoryPath, { recursive: true }, (err) => {
+        if (err) {
+          console.error('Error while creating directory:', err);
+        } else {
+          console.log(`Directory created at ${directoryPath}`);
+        }
+      });
+}
+    
 async function executeShellScript(filePath) {
   const systemInfo = getSystemInfo();
   let shellCommand = "";
@@ -91,15 +110,12 @@ async function executePowershellScript(content) {
   }
 }
 
-function listMessages(messages) {
-  list(messages);
-}
 
 module.exports = {
+  saveToFile,
   saveMessagesToFile,
   readMessagesFromFile,
   readConfigFromFile,
   saveConfigToFile,
-  listMessages,
   executeShellScript
 };

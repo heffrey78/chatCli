@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const { saveToFile } = require('./fileManager');
 
 // Convert fs.writeFile to a function that returns a promise
 const writeFileAsync = util.promisify(fs.writeFile);
@@ -31,7 +32,7 @@ async function writeCodeBlocksToFiles(codeBlocks, outputDirectory) {
     const outputFilePath = path.join(outputDirectory, outputFileName);
 
     // Write the code block to the specified file
-    await writeFileAsync(outputFilePath, codeBlock);
+    await saveToFile(outputFilePath, codeBlock);
 
     // Increment the counter
     counter++;
