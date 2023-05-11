@@ -1,10 +1,11 @@
 const { getChatCompletion, getCodeCompletion } = require('./openai');
-const { saveMessagesToFile, readMessagesFromFile, saveConfigToFile, readConfigFromFile, executeShellScript } = require('./fileManager');
+const { readMessagesFromFile, saveConfigToFile, readConfigFromFile, executeShellScript } = require('./fileManager');
 const { searchAndGetSummarizedItems, search } = require('./google');
-const extractMainContent = require('./webHandler');
+const { extractMainContent, convertWebpageToPdf }= require('./webHandler');
 const getSystemInfo = require('./osInformation');
 const { list } = require("./consoleManager");
 const extractAndWriteCodeToFile = require("./codeManager");
+const { saveMessagesToFile } = require ("./filesystem/saveMessagesToFile");
 
 async function handlePrompt(prompt, messages) {
     const config = await readConfigFromFile();
@@ -22,14 +23,13 @@ async function handlePrompt(prompt, messages) {
         if(config.code === 'true') {
           if(messages.findIndex(message => message.role === 'system') === -1){
             const systemInfo = getSystemInfo();
-            const systemMessage = ' Give the project and appropriate name. Devise an directory structure using best practices.' +
-             ` Unless otherwise specificed, development should target a system with the following information: ${JSON.stringify(systemInfo)} \r\n` +
-            ' Act as an expert in mentioned technologies. Use best practices for each technology and use SOLID principles. \r\n' +
-            ' All code examples should have a comment at the top containing the file path and file name. \r\n' +  
-            ' All command examples. shell scripts, etc should start with a comment that indicates the appropriate file path and file name.'
+            const systemMessage = ` Unless otherwise specificed, development should target a system with the following information: ${JSON.stringify(systemInfo)} \r\n` +
+            ' Act as an expert in mentioned technologies. Use best practices.';
             messages.push({ role: "system", content: systemMessage });
           } 
                   
+          prompt += ' Give every file a name such as // /src/index.js \r\n';
+
           messages.push({ role: "user", content: prompt });
           response = await getCodeCompletion(messages);
       } else {

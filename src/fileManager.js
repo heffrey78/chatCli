@@ -30,25 +30,29 @@ async function readFromFile(filename) {
 }
 
 async function saveMessagesToFile(filename, messages) {
-  await saveToFile(`messages/${filename}`, messages);
+  await saveJsonFile(`messages/${filename}`, messages);
 }
 
 async function saveConfigToFile(config) {
-  await saveToFile("config", config);
+  await saveJsonFile("config", config);
+}
+
+async function saveJsonFile(filename, content) {
+  if (!filename.includes('.')) {
+    filename += ".json";
+  }
+
+  await saveToFile(filename, JSON.stringify(content, null, 2));
 }
 
 async function saveToFile(filename, content) {
   try {
-    if (!filename.includes('.')) {
-      filename += ".json";
-    }
-
     const dir = path.dirname(filename);
     const file = path.basename(filename);
     
     const dirname = path.isAbsolute(dir) ? dir : path.join(path.resolve(process.cwd()), dir);
     await createFolderIfNotExists(`${dirname}`);
-    await fs.writeFile(`${path.join(dirname, file)}`, JSON.stringify(content, null, 2));
+    await fs.writeFile(`${path.join(dirname, file)}`, content);
     console.log(`Content saved to ${file}`);
   } catch (error) {
     console.error("Error saving to file:", error);
@@ -113,6 +117,7 @@ async function executePowershellScript(content) {
 
 module.exports = {
   saveToFile,
+  readFromFile,
   saveMessagesToFile,
   readMessagesFromFile,
   readConfigFromFile,

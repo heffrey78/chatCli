@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "start-ts": "nodemon dist/index.js",
+    "start": "nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./src/index.js",
     "dev": "ts-node src/index.ts"
   },
   "keywords": [],
@@ -18,9 +19,11 @@
     "child_process": "^1.0.2",
     "dotenv": "^16.0.3",
     "node-powershell": "^5.0.1",
-    "openai": "^3.2.1"
+    "openai": "^3.2.1",
+    "puppeteer": "^20.1.1"
   },
   "devDependencies": {
+    "@types/debug": "^4.1.7",
     "@types/node": "^18.16.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"

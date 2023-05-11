@@ -2,12 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 const { saveToFile } = require('./fileManager');
+const { trimOutsideQuotes } = require('./string/trimOutsideQuotes');
 
-// Convert fs.writeFile to a function that returns a promise
-const writeFileAsync = util.promisify(fs.writeFile);
 
 // Function to extract code blocks from the input text
 function extractCodeBlocks(inputText) {
+  const fileName = parseFileNameFromFile(inputText);
   // Replace literal \n characters with actual newlines
   inputText = inputText.replace(/\\n/g, '\n');
 
@@ -15,10 +15,11 @@ function extractCodeBlocks(inputText) {
   const codeBlockRegex = /```[^\r\n]*\r?\n([\s\S]*?)```/g;
 
   // Extract all code blocks from the input text
-  const codeBlocks = [];
+  let codeBlocks = new Map();
   let match;
   while ((match = codeBlockRegex.exec(inputText)) !== null) {
-    codeBlocks.push(match[1]);
+    //codeBlocks.push(match[1]);
+    codeBlocks.set(fileName, match[1]);
   }
   return codeBlocks;
 }
@@ -26,9 +27,9 @@ function extractCodeBlocks(inputText) {
 // Function to write code blocks to files with sequential numerical names
 async function writeCodeBlocksToFiles(codeBlocks, outputDirectory) {
   let counter = 1;
-  for (const codeBlock of codeBlocks) {
+  for (const [fileName, codeBlock] of codeBlocks) {
     // Construct the output file path based on the counter
-    const outputFileName = parseFileName(codeBlock) || `script${counter}.sh`;
+    const outputFileName = fileName || `script${counter}.sh`;
     const outputFilePath = path.join(outputDirectory, outputFileName);
 
     // Write the code block to the specified file
@@ -54,6 +55,7 @@ async function extractAndWriteCodeToFile(inputText, outputDirectory) {
   }
 }
 
+
 const parseFileName = (input) => {
   // The regex pattern to match the file path or name in comments starting with "/*" or "#"
   const regex = /(\/\*(.*?)\*\/)|(^#(.*?)$)/m;
@@ -66,6 +68,23 @@ const parseFileName = (input) => {
 
   return fileName;
 };
+
+const parseFileNameFromFile = (fileContent) => {
+  const COMMENT_MARKERS = ['//', '#', '<!--'];
+
+  const lines = fileContent.split('\n');
+  
+  for (const line of lines) {
+    const potentialMarker = COMMENT_MARKERS.find(marker => line.trim().startsWith(marker));
+
+    if (potentialMarker) {
+      const fileName = line.trim().substr(potentialMarker.length).trim();
+      return fileName;
+    }
+  }
+  
+  return null;
+}
 
 // Export the function as a module
 module.exports = extractAndWriteCodeToFile;
