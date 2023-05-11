@@ -1,4 +1,4 @@
-const { getChatCompletion, getCodeCompletion } = require('./openai');
+const { getChatCompletion, getCodeCompletion, generateImage } = require('./openai');
 const { readMessagesFromFile, saveConfigToFile, readConfigFromFile, executeShellScript } = require('./fileManager');
 const { searchAndGetSummarizedItems, search } = require('./google');
 const { extractMainContent, convertWebpageToPdf }= require('./webHandler');
@@ -70,6 +70,9 @@ async function handlePrompt(prompt, messages) {
     } else if (command ==='DUMPCODE') {
       console.log("Extracting code from message");
       await extractAndWriteCodeToFile(messages[arg].content, "./output/");
+    } else if(command ==='IMAGE') {
+      const imageUrl = await generateImage(prompt);
+      console.log(`Image: ${imageUrl}`);
     } else if (command ==='EXECUTE') {
         let response = await executeShellScript(arg);
         console.log(response);
@@ -84,15 +87,16 @@ async function handlePrompt(prompt, messages) {
 
   async function searchBestHandler(arg, messages) {
     let items = await searchAndGetSummarizedItems(arg);
-    const summaryQuery = `Return only the formatted url of the search result that most closely matches this search term: '${arg}' \r\n Results: ${JSON.stringify(items.slice(0, 5))}`;
+    const summaryQuery = `Return only the formatted url of the search result that most closely matches this search term: '${arg}' \r\n Results: ${JSON.stringify(items.slice(0, 10))}`;
 
     messages.push({ role: 'user', content: summaryQuery });
-    let response = await generateChatCompletion(messages);
+    let response = await getChatCompletion(messages);
     messages.push({ role: 'assistant', content: response });
     console.log('Best Response:', response);
-    const content = await extractMainContent(response);
-    messages.push({role: 'user', content: `summarize ${content}`});
-    response = await generateChatCompletion(messages);
+    let pageContent = await extractMainContent(response);
+    pageContent = pageContent.replace('\\n', ' ');
+    messages.push({role: 'user', content: `Please summarize the following: ${pageContent}`});
+    response = await getChatCompletion(messages);
     console.log(response);
   }
 

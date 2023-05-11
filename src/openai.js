@@ -43,7 +43,23 @@ async function generateChatCompletion(messages) {
       }
 }
 
+async function generateImage (prompt) {
+  const response = await openai.createImage({
+    prompt: prompt,
+    n: 1,
+    size: "1024x1024",
+  });
+  
+  if(response.data && response.data.data && response.data.data.length > 0){
+    const image_url = response.data.data[0].url;
+    return image_url;
+  } else {
+    throw new Error('No data available in the response');
+  }
+}
+
 module.exports = {
   getChatCompletion,
-  getCodeCompletion
+  getCodeCompletion,
+  generateImage
 };

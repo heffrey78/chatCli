@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 const { saveToFile } = require('./fileManager');
-const { trimOutsideQuotes } = require('./string/trimOutsideQuotes');
 
 
 // Function to extract code blocks from the input text
@@ -18,9 +17,10 @@ function extractCodeBlocks(inputText) {
   let codeBlocks = new Map();
   let match;
   while ((match = codeBlockRegex.exec(inputText)) !== null) {
-    //codeBlocks.push(match[1]);
+    console.log(match[1]);
     codeBlocks.set(fileName, match[1]);
   }
+  console.log(`Code blocks count ${codeBlocks.size}`);
   return codeBlocks;
 }
 
