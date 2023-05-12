@@ -60,12 +60,11 @@ async function handlePrompt(prompt, messages) {
       config.model = arg;
       await saveConfigToFile(config);
     } else if(command === 'ADDSEARCH') {
-      await searchHandler(prompt, messages);
+      await searchHandler(arg, messages);
     } else if(command === 'ADDPAGE') {
-      console.log(prompt);
-      await pageHandler(prompt, messages);
+      await pageHandler(arg, messages);
     } else if (command ==='SEARCHLIST') {
-      let items = await searchAndGetSummarizedItems(prompt);
+      let items = await searchAndGetSummarizedItems(arg);
       console.log(items);
     } else if (command ==='SEARCHBEST') {
         await searchAndSummarize(prompt, messages);
@@ -98,18 +97,15 @@ async function handlePrompt(prompt, messages) {
 
   async function searchHandler(arg, messages) {
     let items = await searchAndGetSummarizedItems(arg);
-    const summaryQuery = `Return only the formatted url of the search result that most closely matches this search term: '${arg}' \r\n Results: ${JSON.stringify(items.slice(0, 10))}`;
+    const summaryQuery = `Return only the formatted url of the search result that most closely matches this search term: '${arg}' \r\n Results: ${JSON.stringify(items)}`;
 
     messages.push({ role: 'user', content: summaryQuery });
     let response = await getChatCompletion(messages);
     messages.push({ role: 'assistant', content: response });
     console.log('Best Response:', response);
     await convertWebpageToPdf(response, 'output/test.pdf', null);
-    let pageContent = await extractTextFromPdf('output/test.pdf');
-    messages.push({role: 'user', content: `Please summarize the following: ${pageContent}`});
-    response = await getChatCompletion(messages);
-    messages.push({role: 'assistant', content: response});
-    console.log(response);
+    const pageContent = await extractTextFromPdf('output/test.pdf');
+    return pageContent;
   }
 
   async function pageHandler(arg, messages) {    
