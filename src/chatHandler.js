@@ -59,11 +59,16 @@ async function handlePrompt(prompt, messages) {
       let config = await readConfigFromFile();
       config.model = arg;
       await saveConfigToFile(config);
+    } else if(command === 'ADDSEARCH') {
+      await searchHandler(prompt, messages);
+    } else if(command === 'ADDPAGE') {
+      console.log(prompt);
+      await pageHandler(prompt, messages);
     } else if (command ==='SEARCHLIST') {
-      let items = await searchAndGetSummarizedItems(arg);
+      let items = await searchAndGetSummarizedItems(prompt);
       console.log(items);
     } else if (command ==='SEARCHBEST') {
-        await searchBestHandler(arg, messages);
+        await searchAndSummarize(prompt, messages);
     } else if (command ==='CODE') {
         let config = await readConfigFromFile();
         config.code = arg;
@@ -86,7 +91,12 @@ async function handlePrompt(prompt, messages) {
     return false;
   }
 
-  async function searchBestHandler(arg, messages) {
+  async function searchAndSummarize(arg, messages) {
+    await searchHandler(arg, messages);
+    await summarize(pageContent, messages);
+  }
+
+  async function searchHandler(arg, messages) {
     let items = await searchAndGetSummarizedItems(arg);
     const summaryQuery = `Return only the formatted url of the search result that most closely matches this search term: '${arg}' \r\n Results: ${JSON.stringify(items.slice(0, 10))}`;
 
@@ -97,6 +107,23 @@ async function handlePrompt(prompt, messages) {
     await convertWebpageToPdf(response, 'output/test.pdf', null);
     let pageContent = await extractTextFromPdf('output/test.pdf');
     messages.push({role: 'user', content: `Please summarize the following: ${pageContent}`});
+    response = await getChatCompletion(messages);
+    messages.push({role: 'assistant', content: response});
+    console.log(response);
+  }
+
+  async function pageHandler(arg, messages) {    
+    await convertWebpageToPdf(arg, 'output/test.pdf', null);
+    let fileName = args.replace(' ', '-');
+    let pageContent = await extractTextFromPdf(`output/${fileName}.pdf`);
+    messages.push({role: 'user', content: `Please summarize the following: ${pageContent}`});
+    response = await getChatCompletion(messages);
+    messages.push({role: 'assistant', content: response});
+    console.log(response);
+  }
+
+  async function summarize(arg, messages) {
+    messages.push({role: 'user', content: `Please summarize the following: ${arg}`});
     response = await getChatCompletion(messages);
     messages.push({role: 'assistant', content: response});
     console.log(response);
