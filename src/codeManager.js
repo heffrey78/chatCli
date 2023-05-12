@@ -6,7 +6,6 @@ const { saveToFile } = require('./fileManager');
 
 // Function to extract code blocks from the input text
 function extractCodeBlocks(inputText) {
-  const fileName = parseFileNameFromFile(inputText);
   // Replace literal \n characters with actual newlines
   inputText = inputText.replace(/\\n/g, '\n');
 
@@ -15,9 +14,10 @@ function extractCodeBlocks(inputText) {
 
   // Extract all code blocks from the input text
   let codeBlocks = new Map();
+  let counter = 1;
   let match;
   while ((match = codeBlockRegex.exec(inputText)) !== null) {
-    console.log(match[1]);
+    const fileName = parseFileNameFromFile(match[1], counter++);
     codeBlocks.set(fileName, match[1]);
   }
   console.log(`Code blocks count ${codeBlocks.size}`);
@@ -69,7 +69,7 @@ const parseFileName = (input) => {
   return fileName;
 };
 
-const parseFileNameFromFile = (fileContent) => {
+const parseFileNameFromFile = (fileContent, counter) => {
   const COMMENT_MARKERS = ['//', '#', '<!--'];
 
   const lines = fileContent.split('\n');
@@ -79,11 +79,14 @@ const parseFileNameFromFile = (fileContent) => {
 
     if (potentialMarker) {
       const fileName = line.trim().substr(potentialMarker.length).trim();
-      return fileName;
+
+      if(fileName.split(' ').length === 1){
+        return fileName;  
+      }       
     }
   }
   
-  return null;
+  return `file${counter}.txt`;
 }
 
 // Export the function as a module

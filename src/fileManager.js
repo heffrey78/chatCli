@@ -54,20 +54,17 @@ async function saveToFile(filename, content) {
     await createFolderIfNotExists(`${dirname}`);
     await fs.writeFile(`${path.join(dirname, file)}`, content);
     console.log(`Content saved to ${file}`);
-  } catch (error) {
-    console.error("Error saving to file:", error);
+  } catch (err) {
+    console.error(`Error saving file: ${file}, ${err}`);
   }
 }
 
 async function createFolderIfNotExists(directoryPath) {
-
-      fs.mkdir(directoryPath, { recursive: true }, (err) => {
-        if (err) {
-          console.error('Error while creating directory:', err);
-        } else {
-          console.log(`Directory created at ${directoryPath}`);
-        }
-      });
+  try{
+    await fs.mkdir(directoryPath, { recursive: true });
+  } catch (err) {
+    console.log(`Error creating directory ${directoryPath}, ${err}`);
+  }      
 }
     
 async function executeShellScript(filePath) {
