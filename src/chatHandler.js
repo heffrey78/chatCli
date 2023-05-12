@@ -1,11 +1,12 @@
 const { getChatCompletion, getCodeCompletion, generateImage } = require('./openai');
 const { readMessagesFromFile, saveConfigToFile, readConfigFromFile, executeShellScript } = require('./fileManager');
 const { searchAndGetSummarizedItems, search } = require('./google');
-const { extractMainContent, convertWebpageToPdf }= require('./webHandler');
+const { convertWebpageToPdf }= require('./webHandler');
 const getSystemInfo = require('./osInformation');
 const { list } = require("./consoleManager");
 const extractAndWriteCodeToFile = require("./codeManager");
 const { saveMessagesToFile } = require ("./filesystem/saveMessagesToFile");
+const { extractTextFromPdf } = require ('./web/readFromPdf');
 
 async function handlePrompt(prompt, messages) {
     const config = await readConfigFromFile();
@@ -28,7 +29,7 @@ async function handlePrompt(prompt, messages) {
             messages.push({ role: "system", content: systemMessage });
           } 
                   
-          prompt += ' Give every file a name such as // /src/index.js \r\n';
+          prompt += ' IMPORTANT: Give every file a name. \r\n';
 
           messages.push({ role: "user", content: prompt });
           response = await getCodeCompletion(messages);
@@ -93,10 +94,11 @@ async function handlePrompt(prompt, messages) {
     let response = await getChatCompletion(messages);
     messages.push({ role: 'assistant', content: response });
     console.log('Best Response:', response);
-    let pageContent = await extractMainContent(response);
-    pageContent = pageContent.replace('\\n', ' ');
+    await convertWebpageToPdf(response, 'output/test.pdf', null);
+    let pageContent = await extractTextFromPdf('output/test.pdf');
     messages.push({role: 'user', content: `Please summarize the following: ${pageContent}`});
     response = await getChatCompletion(messages);
+    messages.push({role: 'assistant', content: response});
     console.log(response);
   }
 
