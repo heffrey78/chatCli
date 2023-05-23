@@ -6,7 +6,10 @@
       "outDir": "dist",
       "sourceMap": true,
       "esModuleInterop": true,
-      "allowJs": true
+      "allowJs": true,
+      "types": ["reflect-metadata"],
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true
     },
     "include": ["src/**/*.ts", "src/**/*.js"],
     "exclude": ["node_modules"]

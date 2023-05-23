@@ -31,6 +31,29 @@ async function convertWebpageToPdf(url, output, options = {}) {
   }
 }
 
+async function getHeadingsForAllPages(urlng) {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto(url);
+
+  const pageUrls = await page.$$eval('a', (links) =>
+    links.map((link) => link.href)
+  );
+
+  let headings = [];
+
+  for (const pageUrl of pageUrls) {
+    await page.goto(pageUrl);
+    const pageHeadings = await page.$$eval('h1,h2,h3,h4,h5,h6', (tags) =>
+      tags.map((tag) => tag.textContent.trim())
+    );
+    headings.push(...pageHeadings);
+  }
+
+  await browser.close();
+  return headings;
+}
+
 module.exports = { 
-  convertWebpageToPdf };
+  convertWebpageToPdf, getHeadingsForAllPages };
 

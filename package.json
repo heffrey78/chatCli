@@ -18,12 +18,15 @@
     "cheerio": "^1.0.0-rc.12",
     "child_process": "^1.0.2",
     "dotenv": "^16.0.3",
+    "inversify": "^6.0.1",
     "node-powershell": "^5.0.1",
     "openai": "^3.2.1",
     "pdf-parse": "^1.1.1",
-    "puppeteer": "^20.1.1"
+    "puppeteer": "^20.1.1",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/debug": "^4.1.7",
     "@types/node": "^18.16.3",
     "ts-node": "^10.9.1",
