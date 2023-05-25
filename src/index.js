@@ -1,6 +1,7 @@
 require("dotenv").config();
 const readline = require("readline");
 const { handlePrompt } = require("./chatHandler");
+const keypress = require("keypress");
 // import { container } from "./inversify.config";
 // import strategyFactory from "./StrategyFactory";
 
@@ -14,25 +15,31 @@ async function promptUser() {
     prompt: ':> '
   });
 
+  keypress(process.stdin);
+
   let prompt = '';
-  let exit = false;
+  let exit = false;  
 
   rl.prompt();
 
-  rl.on('line', async (line) => {
-    if (line === '.') {
+  process.stdin.on('keypress', async function (ch, key) {
+
+    if (key && key.name == 'down' && prompt.length > 0) {
       exit = await handlePrompt(prompt, messages);
-      if(!exit){
+
+      if(exit){
+        rl.close();
+      } else {
         prompt = '';
         rl.prompt();
-      } else {
-        rl.close();
       }
-    } else {
+    } 
+  });
+
+  rl.on('line', async (line) => {
       prompt += line + '\
       ';
       rl.prompt();
-    }
   });
 
   rl.on('SIGINT', () => {

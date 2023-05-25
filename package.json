@@ -19,6 +19,7 @@
     "child_process": "^1.0.2",
     "dotenv": "^16.0.3",
     "inversify": "^6.0.1",
+    "keypress": "^0.2.1",
     "node-powershell": "^5.0.1",
     "openai": "^3.2.1",
     "pdf-parse": "^1.1.1",
