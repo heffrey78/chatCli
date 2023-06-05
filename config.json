@@ -1,21 +1,4 @@
 {
   "model": "gpt-4",
-  "code": "true",
-  "dependencies": [
-    {
-      "name": "readPdf",
-      "constructorFn": "../web/readFromPdf.js",
-      "command": "extractTextFromPdf"
-    },
-    {
-      "name": "saveMessages",
-      "constructorFn": "../filesystem/saveMessagesToFile.js",
-      "command": "saveMessagesToFile"
-    },
-    {
-      "name": "search",
-      "constructorFn": "../services/web/search.js",
-      "command": "search"
-    }
-  ]
+  "code": false
 }

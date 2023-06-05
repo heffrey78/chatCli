@@ -22,7 +22,8 @@
     "keypress": "^0.2.1",
     "node-powershell": "^5.0.1",
     "openai": "^3.2.1",
-    "pdf-parse": "^1.1.1",
+    "ora": "^6.3.1",
+    "pdfjs-dist": "^3.7.107",
     "puppeteer": "^20.1.1",
     "reflect-metadata": "^0.1.13"
   },
@@ -30,6 +31,7 @@
     "@types/axios": "^0.14.0",
     "@types/debug": "^4.1.7",
     "@types/node": "^18.16.3",
+    "@types/pdfjs-dist": "^2.10.378",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   }

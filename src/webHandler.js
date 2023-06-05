@@ -31,7 +31,7 @@ async function convertWebpageToPdf(url, output, options = {}) {
   }
 }
 
-async function getHeadingsForAllPages(urlng) {
+async function getHeadingsForAllPages(url) {
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
   await page.goto(url);
