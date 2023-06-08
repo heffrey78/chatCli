@@ -1,7 +1,7 @@
 import { container } from "../../inversify.config";
 import { exec } from "child_process";
-import { promises as fs } from "fs";
-import * as path from "path";
+import { promises as fs, ReadStream, createReadStream } from "fs";
+import { extname, dirname, basename, isAbsolute, join, resolve} from "path";
 import * as util from "util";
 import * as pdf from "pdfjs-dist";
 import { TYPES } from "../../types";
@@ -44,13 +44,13 @@ async function saveJsonFile(filename: string, content: any): Promise<void> {
 
 async function saveToFile(filename: string, content: string): Promise<void> {
   try {
-    const dir = path.dirname(filename);
-    const file = path.basename(filename);
-    const dirname = path.isAbsolute(dir)
+    const dir = dirname(filename);
+    const file = basename(filename);
+    const directoryName = isAbsolute(dir)
       ? dir
-      : path.join(path.resolve(process.cwd()), dir);
+      : join(resolve(process.cwd()), dir);
     await createFolderIfNotExists(`${dirname}`);
-    await fs.writeFile(`${path.join(dirname, file)}`, content);
+    await fs.writeFile(`${join(directoryName, file)}`, content);
     console.log(`Content saved to ${file}`);
   } catch (err) {
     console.error(`Error saving file: ${filename}, ${err}`);
@@ -114,12 +114,57 @@ async function readPDFToString(pdfPath: string): Promise<string> {
   }
 }
 
+export function readImage(path: string): ReadStream {
+  const extension = extname(path).toLowerCase();
+  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+
+  if (!allowedExtensions.includes(extension)) {
+    throw new Error('Invalid image format.');
+  }
+
+  return createReadStream(path);
+}
+
+export interface DirectoryEntry {
+  name: string;
+  children?: DirectoryEntry[];
+}
+
+async function getDirectoryStructure(dirPath: string, parent: DirectoryEntry): Promise<void> {
+  const entries = await fs.readdir(dirPath, { withFileTypes: true });
+
+  entries.forEach((entry) => {
+    const entryPath = join(dirPath, entry.name);
+
+    if (entry.isDirectory()) {
+      const child: DirectoryEntry = { name: entry.name };
+      if (parent.children === undefined) {
+        parent.children = [];
+      }
+      parent.children.push(child);
+      getDirectoryStructure(entryPath, child);
+    } else if (entry.isFile()) {
+      if (parent.children === undefined) {
+        parent.children = [];
+      }
+      parent.children.push({ name: entry.name });
+    }
+  });
+}
+
+async function getDirectoryStructureAsString(dirPath: string): Promise<string> {
+  const root: DirectoryEntry = { name: basename(dirPath) };
+  await getDirectoryStructure(dirPath, root);
+  return JSON.stringify(root, undefined, 2);
+}
+
 export {
   saveToFile,
   readFromFile,
+  readPDFToString,
   saveJsonFile,
   saveMessagesToFile,
   readMessagesFromFile,
   executeShellScript,
-  readPDFToString,
+  getDirectoryStructureAsString
 };
