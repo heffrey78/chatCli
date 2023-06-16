@@ -49,7 +49,7 @@ async function saveToFile(filename: string, content: string): Promise<void> {
     const directoryName = isAbsolute(dir)
       ? dir
       : join(resolve(process.cwd()), dir);
-    await createFolderIfNotExists(`${dirname}`);
+    await createFolderIfNotExists(directoryName);
     await fs.writeFile(`${join(directoryName, file)}`, content);
     console.log(`Content saved to ${file}`);
   } catch (err) {

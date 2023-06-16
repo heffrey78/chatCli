@@ -21,7 +21,7 @@ async function handlePrompt(prompt: string, messages: IMessage[]): Promise<boole
 
     //const list = container.getAll<ICommandStrategy>('ICommandStrategy');
   
-    if (!commandName && !systemMessageExists(messages)) {
+    if (commandSymbol == TYPES.Command["GenerateCodeCommand"] && !systemMessageExists(messages)) {
       addSystemMessage(messages);
     } 
     

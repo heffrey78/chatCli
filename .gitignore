@@ -5,6 +5,7 @@ node_modules/
 
 # Ignore environment variables file
 .env
+credentials.json
 
 # Ignore operating system and editor related files
 .DS_Store
