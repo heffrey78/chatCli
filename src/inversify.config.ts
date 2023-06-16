@@ -21,6 +21,8 @@ import { ISystemInformation } from "./interfaces/system/ISystemInformation";
 import { Google } from "./services/web/google";
 import { SystemInformation } from "./system/SystemInformation";
 import { ICommandStrategy, ISearch, TYPES } from "./types";
+import { GoogleCalendarCommand } from "./commands/web/googleCalendarCommand";
+import { SetSystemMessageCommand } from "./commands/message/setSystemMessageCommand";
 
 const container = new Container();
 
@@ -28,6 +30,7 @@ container.bind<IConfiguration>(TYPES.Configuration).to(Configuration).inSingleto
 container.bind<ISystemInformation>(TYPES.SystemInformation).to(SystemInformation).inSingletonScope();
 container.bind<ISearch>(TYPES.ISearch).to(Google).inSingletonScope();
 
+container.bind<ICommandStrategy>(TYPES.Command.CALENDAR).to(GoogleCalendarCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.CLEAR).to(ClearMessagesCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.CONFIG).to(SaveConfigCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.EXECUTE).to(ExecuteShellCommand).inSingletonScope();
@@ -40,6 +43,7 @@ container.bind<ICommandStrategy>(TYPES.Command.READPDF).to(ReadPdfCommand).inSin
 container.bind<ICommandStrategy>(TYPES.Command.SAVE).to(SaveMessagesCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.SAVECODE).to(SaveCodeCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.SAVEPAGE).to(SaveWebpageCommand).inSingletonScope();
+container.bind<ICommandStrategy>(TYPES.Command.SETSYSTEM).to(SetSystemMessageCommand).inSingletonScope();
 
 container.bind<ICommandStrategy>(TYPES.Command.IMAGE).to(CreateDallECommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.GenerateCodeCommand).to(GenerateCodeCommand).inSingletonScope();

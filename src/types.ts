@@ -3,6 +3,7 @@ import { ISearch } from "./interfaces/web/ISearch";
 
 const TYPES = {
   Command: {
+    CALENDAR: Symbol.for("GoogleCalendarCommand"),
     CLEAR: Symbol.for("ClearMessagesCommand"),
     CONFIG: Symbol.for("SaveConfigCommand"),
     EXECUTE: Symbol.for("ExecuteShellCommand"),
@@ -16,6 +17,7 @@ const TYPES = {
     SAVE: Symbol.for("SaveMessagesCommand"),
     SAVEPAGE: Symbol.for("SaveWebpageCommand"),
     SAVECODE: Symbol.for("SaveCodeCommand"),
+    SETSYSTEM: Symbol.for("SetSystemMessageCommand"),
     GenerateCodeCommand: Symbol.for("GenerateCodeCommand"),
     GenerateChatCommand: Symbol.for("GenerateChatCommand"),
     SaveMessagesCommand: Symbol.for("SaveMessagesCommand"),

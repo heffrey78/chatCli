@@ -9,7 +9,7 @@ const SCOPES: string[] = ['https://www.googleapis.com/auth/calendar.readonly'];
 // created automatically when the authorization flow completes for the first
 // time.
 const TOKEN_PATH = path.join(process.cwd(), 'token.json');
-const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
+const CREDENTIALS_PATH = './credentials.json';
 
 /**
  * Reads previously authorized credentials from the save file.
@@ -49,7 +49,7 @@ async function saveCredentials(client: Auth.OAuth2Client): Promise<void> {
  * Load or request or authorization to call APIs.
  *
  */
-async function authorize(): Promise<Auth.OAuth2Client> {
+export async function authorize(): Promise<Auth.OAuth2Client> {
   let client = await loadSavedCredentialsIfExist();
   if (client) {
     return client;
@@ -71,7 +71,7 @@ async function authorize(): Promise<Auth.OAuth2Client> {
  * Lists the next 10 events on the user's primary calendar.
  * @param {Auth.OAuth2Client} auth An authorized OAuth2 client.
  */
-async function listEvents(auth: Auth.OAuth2Client): Promise<void> {
+export async function listEvents(auth: Auth.OAuth2Client): Promise<void> {
   const calendar: calendar_v3.Calendar = google.calendar({ version: 'v3', auth });
   const res = await calendar.events.list({
     calendarId: 'primary',
@@ -94,4 +94,3 @@ async function listEvents(auth: Auth.OAuth2Client): Promise<void> {
   });
 }
 
-authorize().then(listEvents).catch(console.error);
