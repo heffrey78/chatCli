@@ -19,7 +19,7 @@ import { Configuration } from "./config/Configuration";
 import { IConfiguration } from "./interfaces/IConfiguration";
 import { ISystemInformation } from "./interfaces/system/ISystemInformation";
 import { Google } from "./services/web/google";
-import { SystemInformation } from "./system/SystemInformation";
+import { SystemInformation } from "./services/system/SystemInformation";
 import { ICommandStrategy, ISearch, TYPES } from "./types";
 import { GoogleCalendarCommand } from "./commands/web/googleCalendarCommand";
 import { SetSystemMessageCommand } from "./commands/message/setSystemMessageCommand";

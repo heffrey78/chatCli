@@ -1,7 +1,7 @@
 const os = require("os");
 const { execSync } = require("child_process");
 import { injectable } from "inversify";
-import { ISystemInformation } from "../interfaces/system/ISystemInformation";
+import { ISystemInformation } from "../../interfaces/system/ISystemInformation";
 
 @injectable()
 class SystemInformation implements ISystemInformation {
