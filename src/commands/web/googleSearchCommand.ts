@@ -6,7 +6,7 @@ import { TYPES, IMessage, ISearch, SearchResult } from "../../types";
 export class GoogleSearchCommand implements ICommandStrategy {
   search: ISearch;
 
-  public constructor(@inject(TYPES.ISearch) search: ISearch) {
+  public constructor(@inject(TYPES.SearchHandler) search: ISearch) {
     this.search = search;
   }
 

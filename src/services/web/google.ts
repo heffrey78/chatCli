@@ -3,10 +3,10 @@ import dotenv from "dotenv";
 import axios from "axios";
 import { SearchResult } from "../../types";
 import { injectable } from "inversify";
-import { ISearch } from "../../interfaces/web/ISearch";
+import { ISearch as SearchHandler } from "../../interfaces/web/ISearch";
 
 @injectable()
-export class Google implements ISearch {
+export class Google implements SearchHandler {
   name: string;
 
   constructor() {

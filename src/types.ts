@@ -25,7 +25,8 @@ const TYPES = {
   Configuration: Symbol.for("Configuration"),
   SystemInformation: Symbol.for("SystemInformation"),
   ICommandStrategy: Symbol.for("ICommandStrategy"),
-  ISearch: Symbol.for("ISearch"),
+  SearchHandler: Symbol.for("ISearch"),
+  Handler: Symbol.for("IHandler")
 };
 
 export { TYPES, ISearch, ICommandStrategy };
@@ -34,13 +35,12 @@ type CommandSymbols = {
   [key: string]: symbol;
 };
 
-type TYPESObject = {
-  Command: CommandSymbols;
-  [property: string]: any;
-};
-
 export function extractCommandLabels(): string[] {
   return Object.keys(TYPES.Command);
+}
+
+export interface IHandler {
+  handle( prompt: string, messages:  IMessage[]): Promise<boolean | undefined>;
 }
 
 export interface IConfig {
