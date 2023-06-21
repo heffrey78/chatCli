@@ -1,9 +1,9 @@
-import { injectable, inject } from "inversify";
-import { container } from "./inversify.config";
-import { TYPES, IMessage, ParsedPrompt, IHandler } from "./types";
-import { ICommandStrategy } from "./interfaces/ICommandStrategy";
-import { SystemInformation } from "./system/SystemInformation";
-import { Configuration } from "./config/Configuration";
+import { injectable, inject } from 'inversify';
+import { container } from './inversify.config';
+import { TYPES, IMessage, ParsedPrompt, IHandler } from './types';
+import { ICommandStrategy } from './interfaces/ICommandStrategy';
+import { SystemInformation } from './services/system/SystemInformation';
+import { Configuration } from './config/Configuration';
 
 // Import other required modules and function
 @injectable()
