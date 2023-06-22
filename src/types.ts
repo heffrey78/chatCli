@@ -72,13 +72,3 @@ export interface SearchResult {
   snippet: string;
   imageUrl?: string;
 }
-
-export interface ITextItem {
-  str: string;
-  dir: string;
-  width: number;
-  height: number;
-  transform: number[];
-  fontName: string;
-  hasEOL: boolean;
-}

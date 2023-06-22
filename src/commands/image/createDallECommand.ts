@@ -1,11 +1,18 @@
-import { injectable } from "inversify";
+import { injectable, inject } from 'inversify';
+import { TYPES, IMessage } from "../../types";
+import { OpenAiClient } from '../../services/openai/openAiClient';
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
-import { generateImage } from "../../services/openai"
 
 @injectable()
 export class CreateDallECommand implements ICommandStrategy {
+  @inject(TYPES.AiClient) private aiClient: OpenAiClient;
+
+  public constructor(@inject(TYPES.AiClient) aiClient: OpenAiClient) {
+    this.aiClient = aiClient;
+  }
+
   async execute(args: string[], messages: any[]): Promise<boolean> {
-    const imgageUrls = await generateImage(args[0]);
+    const imgageUrls = await this.aiClient.generateImage(args[0]);
     messages.push({ role: "user", content: JSON.stringify(imgageUrls) });
     console.log(`Images generated: 
     ${imgageUrls}`);
