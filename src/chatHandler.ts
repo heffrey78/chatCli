@@ -42,7 +42,7 @@ class ChatHandler implements IHandler {
       const setSystemMessageCommand = container.get<ICommandStrategy>(
         TYPES.Command.SETSYSTEM
       );
-      return await setSystemMessageCommand.execute([systemMessage], messages);
+      await setSystemMessageCommand.execute([systemMessage], messages);
     }
 
     if (!commandName) {

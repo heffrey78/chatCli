@@ -26,7 +26,8 @@ const TYPES = {
   SystemInformation: Symbol.for("SystemInformation"),
   ICommandStrategy: Symbol.for("ICommandStrategy"),
   SearchHandler: Symbol.for("ISearch"),
-  Handler: Symbol.for("IHandler")
+  Handler: Symbol.for("IHandler"),
+  AiClient: Symbol.for("IAiClient")
 };
 
 export { TYPES, ISearch, ICommandStrategy };
@@ -50,6 +51,13 @@ export interface IConfig {
 export interface IMessage {
   role: string;
   content: string;
+}
+
+export interface IAIClient {
+  complete(messages: IMessage[]): Promise<string>;
+  chat(messages: IMessage[]): Promise<string>;
+  embed(inputText: string): Promise<number[]>;
+  generateImage(prompt: string): Promise<string[]>
 }
 
 export interface ParsedPrompt {
