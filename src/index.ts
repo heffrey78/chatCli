@@ -3,6 +3,7 @@ import readline from "readline";
 import { TYPES, IHandler, IMessage } from "./types";
 import { container } from "./inversify.config";
 import { AppDataSource } from "./data-source";
+import { createDatabase } from "typeorm-extension";
 
 dotenv.config();
 
@@ -50,8 +51,9 @@ async function promptUser(): Promise<void> {
   });
 }
 
-AppDataSource.initialize()
-  .then(async () => {
-    promptUser();
-  })
-  .catch((error) => console.log("Error: ", error));
+createDatabase({ options: AppDataSource.options }).then(async () => {
+    await AppDataSource.initialize();
+    await AppDataSource.runMigrations();
+    await promptUser();
+}).catch((error) => console.log("Error: ", error));
+

@@ -10,7 +10,7 @@ export async function convertWebpageToPdf(url: string, output: string, options: 
     await page.goto(url, { waitUntil: 'networkidle2' });
     // Set default options for the PDF if none are provided
     const defaultOptions = {
-      path: output,
+      path: `./output/${output}.pdf.`,
       format: 'A4',
       printBackground: false
     };
