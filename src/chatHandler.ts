@@ -1,11 +1,10 @@
-import { injectable, inject } from 'inversify';
-import { container } from './inversify.config';
-import { TYPES, IMessage, ParsedPrompt, IHandler } from './types';
-import { ICommandStrategy } from './interfaces/ICommandStrategy';
-import { SystemInformation } from './services/system/SystemInformation';
-import { Configuration } from './config/Configuration';
+import { injectable, inject } from "inversify";
+import { container } from "./inversify.config";
+import { TYPES, IMessage, ParsedPrompt, IHandler } from "./types";
+import { ICommandStrategy } from "./interfaces/ICommandStrategy";
+import { SystemInformation } from "./services/system/SystemInformation";
+import { Configuration } from "./config/Configuration";
 
-// Import other required modules and function
 @injectable()
 class ChatHandler implements IHandler {
   @inject(TYPES.SystemInformation) private systemInformation: SystemInformation;
@@ -72,22 +71,16 @@ class ChatHandler implements IHandler {
         argText = "";
       } else {
         command = text.substring(0, commandEnd).toUpperCase();
-        text = text.substring(commandEnd + 1);
+        argText = text
+          .substring(commandEnd + 1)
+          .trim()
+          .replace(/\r?\n|\r/g, "");
 
-        if (
-          (text.startsWith("'") && text.endsWith("'")) ||
-          (text.startsWith('"') && text.endsWith('"'))
-        ) {
-          text = text.slice(1, -1);
+        let match: RegExpExecArray | null;
+        let re = /"([^"]*)"|'([^']*)'|([^ ]+)/g;
+        while ((match = re.exec(argText))) {
+          args.push(match[1] || match[2] || match[3]);
         }
-        argText = text.trim();
-      }
-
-      let match: RegExpExecArray | null;
-      let re = /"([^"]*)"|'([^']*)'|([^ ]+)/g;
-      while ((match = re.exec(text))) {
-        let arg = match[1] || match[2] || match[3];
-        args.push(arg);
       }
 
       return { command, args, argText };

@@ -1,0 +1,8 @@
+# chat-cli
+
+Steps to run this project:
+
+1. Run `npm i` command
+2. Setup database settings inside `data-source.ts` file
+3. Fire up Postgres: postgres -D "C:\Program Files\PostgreSQL\15\data"
+4. Run `npm run start-ts` command

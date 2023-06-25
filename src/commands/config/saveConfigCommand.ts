@@ -15,13 +15,14 @@ export class SaveConfigCommand implements ICommandStrategy {
   }
 
   async execute(args: string[], messages: any[]): Promise<boolean> {
-    const config: IConfig = new ConfigFile(
+    const config: IConfig = 
+    new ConfigFile(
       this.configuration.model,
       this.configuration.code
     );
 
     for (let i = 0; i < args.length; i += 2) {
-      let property = args[i];
+      let property = args[i].replace(/\'/g, '');
       if (args[i + 1] && config.hasOwnProperty(property)) {
         let value = args[i + 1];
         if (Boolean(value) && typeof config[property] === "boolean") {
