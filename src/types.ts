@@ -1,3 +1,4 @@
+import { Conversation } from "./database/entities/Conversation";
 import { ICommandStrategy } from "./interfaces/ICommandStrategy";
 import { ISearch } from "./interfaces/web/ISearch";
 
@@ -27,7 +28,8 @@ const TYPES = {
   ICommandStrategy: Symbol.for("ICommandStrategy"),
   SearchHandler: Symbol.for("ISearch"),
   Handler: Symbol.for("IHandler"),
-  AiClient: Symbol.for("IAiClient")
+  AiClient: Symbol.for("IAiClient"),
+  MessageClient: Symbol.for("MessageClient")
 };
 
 export { TYPES, ISearch, ICommandStrategy };
@@ -41,7 +43,12 @@ export function extractCommandLabels(): string[] {
 }
 
 export interface IHandler {
-  handle( prompt: string, messages:  IMessage[]): Promise<boolean | undefined>;
+  handle(prompt: string, messages:  IMessage[]): Promise<boolean | undefined>;
+}
+
+export interface IMessageHandler {
+  save(conversation: Conversation): Promise<void>;
+  load(name: string): Promise<Conversation | null>;
 }
 
 export interface IConfig {

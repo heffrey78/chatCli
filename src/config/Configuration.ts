@@ -7,12 +7,14 @@ import { IConfig } from "../types";
 class Configuration implements IConfiguration {
   model: string;
   code: boolean;
+  postgres: boolean;
 
   constructor() {
     const config = this.readConfigurationFile();
 
     this.model = config?.model || "gpt-4";
     this.code = config?.code ? true : false;
+    this.postgres = config?.postgres ? true: false;
   }
 
   readConfigurationFile(): IConfig | undefined {
@@ -24,7 +26,8 @@ class Configuration implements IConfiguration {
       // Ensure that 'model' is a string and 'code' is a boolean
       if (
         typeof config.model !== "string" ||
-        typeof config.code !== "boolean"
+        typeof config.code !== "boolean" ||
+        typeof config.postgres !== "boolean"
       ) {
         throw new Error("Invalid configuration format");
       }

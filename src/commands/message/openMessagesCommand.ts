@@ -1,27 +1,35 @@
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
-import { readMessagesFromFile } from "../../services/file/fileManager";
-import { injectable } from "inversify";
-import { IMessage } from "../../types";
-import { AppDataSource } from "../../data-source";
-import { Conversation } from "../../database/entities/Conversation";
+import { inject, injectable } from "inversify";
+import { TYPES, IMessage, IMessageHandler } from "../../types";
+import { IConfiguration } from "../../interfaces/IConfiguration";
 
 @injectable()
 export class OpenMessagesCommand implements ICommandStrategy {
+  configuration: IConfiguration;
+  handlerFactory: (named: string) => IMessageHandler;
+
+  public constructor(
+    @inject(TYPES.Configuration) configuration: IConfiguration,
+    @inject("Factory<IMessageHandler>") factory: (named: string) => IMessageHandler
+  ) {
+    this.configuration = configuration;
+    this.handlerFactory = factory;
+  }
+
   async execute(args: string[], messages: IMessage[]): Promise<boolean> {
+    let handlerName = this.configuration.postgres ? "postgres" : "json";
+    let handler = this.handlerFactory(handlerName);
 
-    const conversation = await AppDataSource.getRepository(Conversation)
-    .createQueryBuilder("conversation")
-    .leftJoinAndSelect("conversation.messages", "message")
-    .where("conversation.name = :name")
-    .setParameters({name: args[0]})
-    .getOne();
+    let conversation = await handler.load(args[0]);
 
-    console.log(JSON.stringify(conversation));
-    const readMessages = await readMessagesFromFile(args[0]);
-    readMessages.forEach((message: IMessage) => {
-      messages.push({ role: message.role, content: message.content });
-    });
-    console.log(`Loaded messages from ${args[0]}.json`);
+    if(conversation?.messages !== undefined){
+      conversation?.messages.forEach((message: IMessage) => {
+        messages.push({ role: message.role, content: message.content });
+      });
+
+      console.log(`Loaded messages from ${args[0]}`);
+    }
+
     return false;
   }
 }

@@ -18,7 +18,8 @@ export class SaveConfigCommand implements ICommandStrategy {
     const config: IConfig = 
     new ConfigFile(
       this.configuration.model,
-      this.configuration.code
+      this.configuration.code,
+      this.configuration.postgres
     );
 
     for (let i = 0; i < args.length; i += 2) {

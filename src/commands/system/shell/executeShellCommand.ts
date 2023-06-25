@@ -1,5 +1,5 @@
-import { ICommandStrategy } from "../../../interfaces/ICommandStrategy";
 import { injectable } from "inversify";
+import { ICommandStrategy } from "../../../interfaces/ICommandStrategy";
 import { executeShellScript } from "../../../services/file/fileManager";
 
 @injectable()
