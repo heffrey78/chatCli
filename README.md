@@ -24,7 +24,9 @@ Configuration
 2. Example: `.config 'code' 'true'` 
 
 Docker notes
- docker run --name chat-postgres -e POSTGRES_PASSWORD=BigBlockRed15! -p 5432:5432 --rm -d ankane/pgvector
 
-npx typeorm-ts-node-esm migration:generate ./src/migration/update-post-table -d ./src/data-source.ts
+docker run --name chat-postgres -e POSTGRES_PASSWORD=BigBlockRed15! -e PGDATA=/var/lib/postgresql/data/pgdata -v postgres-data:/var/lib/postgresql/data -p 5432:5432 --rm ankane/pgvector
 
+npx typeorm-ts-node-esm migration:generate ./src/migration/{update-class-name} -d ./src/data-source.ts
+
+psql.exe" "host=localhost port=5432 dbname=chatcli user=postgres sslmode=prefer connect_timeout=10"
