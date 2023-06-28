@@ -1,11 +1,11 @@
 import { injectable } from "inversify";
 import { Conversation } from "../../database/entities/Conversation";
-import { IMessage, IMessageHandler } from "../../types";
-import { readMessagesFromFile, saveMessagesToFile } from "../../services/file/fileManager";
+import { IMessage, ConversationHandler } from "../../types";
+import { readMessagesFromFile, saveMessagesToFile, listFilesInDirectory } from "../file/fileManager";
 import { Message } from "../../database/entities/Message";
 
 @injectable()
-export class JsonMessageHandler implements IMessageHandler {
+export class JsonConversationHandler implements ConversationHandler {
   async save(conversation: Conversation): Promise<void> {
     let iMessages: IMessage[] = [];
 
@@ -35,5 +35,9 @@ export class JsonMessageHandler implements IMessageHandler {
     conversation.messages = messages;
 
     return conversation;
+  }
+
+  async list(): Promise<string[] | undefined> {
+    return await listFilesInDirectory("messages");
   }
 }

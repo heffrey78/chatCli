@@ -1,12 +1,11 @@
 import { container } from "../../inversify.config";
 import { exec } from "child_process";
 import { promises as fs, ReadStream, createReadStream } from "fs";
-import { extname, dirname, basename, isAbsolute, join, resolve} from "path";
+import { extname, dirname, basename, isAbsolute, join, resolve } from "path";
 import * as util from "util";
 import * as pdf from "pdfjs-dist";
-import { TYPES } from "../../types";
+import { TYPES, DirectoryEntry } from "../../types";
 import { ISystemInformation } from "../../interfaces/system/ISystemInformation";
-
 
 const execPromise = util.promisify(exec);
 
@@ -116,21 +115,49 @@ async function readPDFToString(pdfPath: string): Promise<string> {
 
 export function readImage(path: string): ReadStream {
   const extension = extname(path).toLowerCase();
-  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+  const allowedExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"];
 
   if (!allowedExtensions.includes(extension)) {
-    throw new Error('Invalid image format.');
+    throw new Error("Invalid image format.");
   }
 
   return createReadStream(path);
 }
 
-export interface DirectoryEntry {
-  name: string;
-  children?: DirectoryEntry[];
+async function listFilesInDirectory(directory: string): Promise<string[] | undefined> {
+  try {
+    // Read the contents of the given directory
+    const entries: string[] = await fs.readdir(directory);
+
+    // Initialize an empty array to store the file names
+    const files: string[] = [];
+
+    // Iterate through the entries and identify files
+    for (const entry of entries) {
+      const entryPath = join(directory, entry);
+      const entryStats = await fs.stat(entryPath);
+
+      // If the entry is a file, add it to the files array
+      if (entryStats.isFile()) {
+        files.push(entry);
+      }
+    }
+
+    // Return the array of file names
+    return files;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(`Error listing files: ${error.message}`);
+    } else {
+      console.error(`An unexpected error occurred while reading ${directory}`);
+    }
+  }
 }
 
-async function getDirectoryStructure(dirPath: string, parent: DirectoryEntry): Promise<void> {
+async function getDirectoryStructure(
+  dirPath: string,
+  parent: DirectoryEntry
+): Promise<void> {
   const entries = await fs.readdir(dirPath, { withFileTypes: true });
 
   entries.forEach((entry) => {
@@ -166,5 +193,6 @@ export {
   saveMessagesToFile,
   readMessagesFromFile,
   executeShellScript,
-  getDirectoryStructureAsString
+  getDirectoryStructureAsString,
+  listFilesInDirectory,
 };

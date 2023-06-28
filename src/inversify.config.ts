@@ -20,13 +20,14 @@ import { IConfiguration } from "./interfaces/IConfiguration";
 import { ISystemInformation } from "./interfaces/system/ISystemInformation";
 import { Google as GoogleSearch } from "./services/web/google";
 import { SystemInformation } from "./services/system/SystemInformation";
-import { ICommandStrategy, ISearch, TYPES, IHandler, IAIClient, IMessageHandler } from "./types";
+import { ICommandStrategy, ISearch, TYPES, IHandler, IAIClient, ConversationHandler } from "./types";
 import { GoogleCalendarCommand } from "./commands/web/googleCalendarCommand";
 import { SetSystemMessageCommand } from "./commands/message/setSystemMessageCommand";
 import { ChatHandler } from "./chatHandler";
 import { OpenAiClient } from "./services/openai/openAiClient";
-import { PostgresMessageHandler } from "./services/chat/postgresMessageHandler";
-import { JsonMessageHandler } from "./services/chat/jsonMessageHandler";
+import { PostgresConversationHandler } from "./services/chat/postgresConversationHandler";
+import { JsonConversationHandler } from "./services/chat/jsonConversationHandler";
+import { ListConversationsCommand } from "./commands/message/listConversationsCommand";
 
 const container = new Container();
 
@@ -44,6 +45,7 @@ container.bind<ICommandStrategy>(TYPES.Command.GETDIR).to(AddDirectoryCommand).i
 container.bind<ICommandStrategy>(TYPES.Command.GETEMBEDDING).to(GetEmbeddingCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.GOOGLE).to(GoogleSearchCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.LIST).to(ListMessagesCommand).inSingletonScope();
+container.bind<ICommandStrategy>(TYPES.Command.CONVERSATIONS).to(ListConversationsCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.OPEN).to(OpenMessagesCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.READPDF).to(ReadPdfCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.SAVE).to(SaveMessagesCommand).inSingletonScope();
@@ -55,12 +57,12 @@ container.bind<ICommandStrategy>(TYPES.Command.IMAGE).to(CreateDallECommand).inS
 container.bind<ICommandStrategy>(TYPES.Command.GenerateCodeCommand).to(GenerateCodeCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.GenerateChatCommand).to(GenerateChatCommand).inSingletonScope();
 
-container.bind<IMessageHandler>("IMessageHandler").to(PostgresMessageHandler).whenTargetNamed("postgres");
-container.bind<IMessageHandler>("IMessageHandler").to(JsonMessageHandler).whenTargetNamed("json");
+container.bind<ConversationHandler>("ConversationHandler").to(PostgresConversationHandler).whenTargetNamed("postgres");
+container.bind<ConversationHandler>("ConversationHandler").to(JsonConversationHandler).whenTargetNamed("json");
 
-container.bind<interfaces.Factory<IMessageHandler>>("Factory<IMessageHandler>").toFactory<IMessageHandler,[string]>((context) => {
+container.bind<interfaces.Factory<ConversationHandler>>("Factory<ConversationHandler>").toFactory<ConversationHandler,[string]>((context) => {
     return (named: string) => {
-        return context.container.getNamed<IMessageHandler>("IMessageHandler", named);
+        return context.container.getNamed<ConversationHandler>("ConversationHandler", named);
     };
 });
 

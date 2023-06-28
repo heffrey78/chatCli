@@ -2,17 +2,17 @@ import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import { inject, injectable } from "inversify";
 import { Conversation } from "../../database/entities/Conversation";
 import { Message } from "../../database/entities/Message";
-import { TYPES, IMessage, IMessageHandler } from "../../types";
+import { TYPES, IMessage, ConversationHandler } from "../../types";
 import { IConfiguration } from "../../interfaces/IConfiguration";
 
 @injectable()
 export class SaveMessagesCommand implements ICommandStrategy {  
   configuration: IConfiguration;
-  handlerFactory: (named: string) => IMessageHandler;
+  handlerFactory: (named: string) => ConversationHandler;
 
   public constructor(
     @inject(TYPES.Configuration) configuration: IConfiguration,
-    @inject("Factory<IMessageHandler>") factory: (named: string) => IMessageHandler
+    @inject("Factory<ConversationHandler>") factory: (named: string) => ConversationHandler
   ) {
     this.configuration = configuration;
     this.handlerFactory = factory;

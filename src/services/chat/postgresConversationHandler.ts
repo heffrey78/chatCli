@@ -1,10 +1,10 @@
 import { injectable } from "inversify";
 import { Conversation } from "../../database/entities/Conversation";
-import { IMessageHandler } from "../../types";
+import { ConversationHandler } from "../../types";
 import { AppDataSource } from "../../data-source";
 
 @injectable()
-export class PostgresMessageHandler implements IMessageHandler {
+export class PostgresConversationHandler implements ConversationHandler {
   async save(conversation: Conversation): Promise<void> {
     const repo = AppDataSource.getRepository("Conversation");
     await repo.save(conversation);
@@ -25,5 +25,10 @@ export class PostgresMessageHandler implements IMessageHandler {
     .getOne();
 
     return conversation;
+  }
+
+  async list(): Promise<string[] | undefined> {
+    const conversations = await AppDataSource.getRepository(Conversation).find();
+    return conversations.map((conversation) => conversation.name);
   }
 }

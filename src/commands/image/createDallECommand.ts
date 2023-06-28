@@ -14,8 +14,10 @@ export class CreateDallECommand implements ICommandStrategy {
   async execute(args: string[], messages: any[]): Promise<boolean> {
     const imgageUrls = await this.aiClient.generateImage(args[0]);
     messages.push({ role: "user", content: JSON.stringify(imgageUrls) });
-    console.log(`Images generated: 
-    ${imgageUrls}`);
+    console.log('Images generated: ');
+    imgageUrls.forEach((imageUrl) => {
+      console.log(imageUrl);
+    });
 
     return false;
   }

@@ -13,6 +13,7 @@ const TYPES = {
     GOOGLE: Symbol.for("GoogleSearchCommand"),
     IMAGE: Symbol.for("CreateDallECommand"),
     LIST: Symbol.for("ListMessagesCommand"),
+    CONVERSATIONS: Symbol.for("ListConversationsCommand"),
     OPEN: Symbol.for("OpenMessagesCommand"),
     READPDF: Symbol.for("ReadPdfCommand"),
     SAVE: Symbol.for("SaveMessagesCommand"),
@@ -46,9 +47,10 @@ export interface IHandler {
   handle(prompt: string, messages:  IMessage[]): Promise<boolean | undefined>;
 }
 
-export interface IMessageHandler {
+export interface ConversationHandler {
   save(conversation: Conversation): Promise<void>;
   load(name: string): Promise<Conversation | null>;
+  list(): Promise<string[] | undefined>;
 }
 
 export interface IConfig {
@@ -78,4 +80,9 @@ export interface SearchResult {
   link: string;
   snippet: string;
   imageUrl?: string;
+}
+
+export interface DirectoryEntry {
+  name: string;
+  children?: DirectoryEntry[];
 }
