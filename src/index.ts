@@ -17,7 +17,7 @@ async function promptUser(): Promise<void> {
     terminal: false, // Set to false
   });
 
-  let prompt = "";
+  let prompt: string = "";
   let exit: Boolean | undefined = false;
 
   process.stdout.write("> ");

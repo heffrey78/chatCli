@@ -10,7 +10,7 @@ export class OpenMessagesCommand implements ICommandStrategy {
 
   public constructor(
     @inject(TYPES.Configuration) configuration: IConfiguration,
-    @inject("Factory<IMessageHandler>") factory: (named: string) => ConversationHandler
+    @inject("Factory<ConversationHandler>") factory: (named: string) => ConversationHandler
   ) {
     this.configuration = configuration;
     this.handlerFactory = factory;
