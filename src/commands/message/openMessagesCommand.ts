@@ -17,7 +17,7 @@ export class OpenMessagesCommand implements ICommandStrategy {
   }
 
   async execute(args: string[], messages: IMessage[]): Promise<boolean> {
-    let handlerName = this.configuration.postgres ? "postgres" : "json";
+    let handlerName = process.env.USE_POSTGRES ? "postgres" : "json";
     let handler = this.handlerFactory(handlerName);
 
     let conversation = await handler.load(args[0]);

@@ -51,9 +51,17 @@ async function promptUser(): Promise<void> {
   });
 }
 
-createDatabase({ options: AppDataSource.options }).then(async () => {
-    await AppDataSource.initialize();
-    await AppDataSource.runMigrations();
+async function startup(): Promise<void> {
+  if(process.env.USE_POSTGRES === "true"){
+    createDatabase({ options: AppDataSource.options }).then(async () => {
+      await AppDataSource.initialize();
+      await AppDataSource.runMigrations();
+      await promptUser();
+  }).catch((error) => console.log("Error: ", error));
+  } else {
     await promptUser();
-}).catch((error) => console.log("Error: ", error));
+  }
+}
+
+startup();
 

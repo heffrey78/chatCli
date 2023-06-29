@@ -19,7 +19,7 @@ export class SaveMessagesCommand implements ICommandStrategy {
   }
   
   async execute(args: string[], iMessages: IMessage[]): Promise<boolean> {
-    let handlerName = this.configuration.postgres ? "postgres" : "json";
+    let handlerName = process.env.USE_POSTGRES ? "postgres" : "json";
     let handler = this.handlerFactory(handlerName);
 
     let conversation = new Conversation();

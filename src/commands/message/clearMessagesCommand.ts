@@ -1,5 +1,4 @@
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
-import { readMessagesFromFile } from "../../services/file/fileManager";
 import { injectable } from "inversify";
 import { IMessage } from "../../types";
 
