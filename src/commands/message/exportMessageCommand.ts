@@ -4,7 +4,7 @@ import { TYPES, IMessage, ConversationHandler } from "../../types";
 import { IConfiguration } from "../../interfaces/IConfiguration";
 
 @injectable()
-export class OpenMessagesCommand implements ICommandStrategy {
+export class ExportMessagesCommand implements ICommandStrategy {
   configuration: IConfiguration;
   handlerFactory: (named: string) => ConversationHandler;
 
@@ -17,17 +17,20 @@ export class OpenMessagesCommand implements ICommandStrategy {
   }
 
   async execute(args: string[], messages: IMessage[]): Promise<boolean> {
-    const handlerName = "postgres";
-    let handler = this.handlerFactory(handlerName);
-
-    let conversation = await handler.load(args[0]);
+    const jsonHandlerName = "json";
+    const postgresHandlerName = "postgres";
+    let jsonHandler = this.handlerFactory(jsonHandlerName);
+    let postgresHandler = this.handlerFactory(postgresHandlerName);
+    let conversation = await postgresHandler.load(args[0]);
 
     if(conversation?.messages !== undefined){
       conversation?.messages.forEach((message: IMessage) => {
         messages.push({ role: message.role, content: message.content });
       });
 
-      console.log(`Loaded messages from ${args[0]}`);
+     await jsonHandler.save(conversation);
+
+      console.log(`Exported messages from ${args[0]}`);
     }
 
     return false;

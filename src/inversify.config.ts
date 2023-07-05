@@ -28,6 +28,8 @@ import { OpenAiClient } from "./services/openai/openAiClient";
 import { PostgresConversationHandler } from "./services/chat/postgresConversationHandler";
 import { JsonConversationHandler } from "./services/chat/jsonConversationHandler";
 import { ListConversationsCommand } from "./commands/message/listConversationsCommand";
+import { ImportMessagesCommand } from "./commands/message/importMessageCommand";
+import { ExportMessagesCommand } from "./commands/message/exportMessageCommand";
 
 const container = new Container();
 
@@ -41,9 +43,11 @@ container.bind<ICommandStrategy>(TYPES.Command.CALENDAR).to(GoogleCalendarComman
 container.bind<ICommandStrategy>(TYPES.Command.CLEAR).to(ClearMessagesCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.CONFIG).to(SaveConfigCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.EXECUTE).to(ExecuteShellCommand).inSingletonScope();
+container.bind<ICommandStrategy>(TYPES.Command.EXPORT).to(ExportMessagesCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.GETDIR).to(AddDirectoryCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.GETEMBEDDING).to(GetEmbeddingCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.GOOGLE).to(GoogleSearchCommand).inSingletonScope();
+container.bind<ICommandStrategy>(TYPES.Command.IMPORT).to(ImportMessagesCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.LIST).to(ListMessagesCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.CONVERSATIONS).to(ListConversationsCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.OPEN).to(OpenMessagesCommand).inSingletonScope();

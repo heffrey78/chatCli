@@ -16,7 +16,7 @@ export class ListConversationsCommand implements ICommandStrategy {
     }
 
     async execute(args: string[], messages: IMessage[]): Promise<boolean> {
-        let handlerName = process.env.USE_POSTGRES ? "postgres" : "json";
+        const handlerName =  "postgres";
         let handler = this.handlerFactory(handlerName);
         const list = await handler.list();
         console.log("Conversations: ");

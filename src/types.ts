@@ -8,10 +8,12 @@ const TYPES = {
     CLEAR: Symbol.for("ClearMessagesCommand"),
     CONFIG: Symbol.for("SaveConfigCommand"),
     EXECUTE: Symbol.for("ExecuteShellCommand"),
+    EXPORT: Symbol.for("ExportMessageCommand"),
     GETDIR: Symbol.for("AddDirectoryCommand"),
     GETEMBEDDING: Symbol.for("GetEmbeddingCommand"),
     GOOGLE: Symbol.for("GoogleSearchCommand"),
     IMAGE: Symbol.for("CreateDallECommand"),
+    IMPORT: Symbol.for("ImportMessageCommand"),
     LIST: Symbol.for("ListMessagesCommand"),
     CONVERSATIONS: Symbol.for("ListConversationsCommand"),
     OPEN: Symbol.for("OpenMessagesCommand"),
@@ -60,6 +62,11 @@ export interface IConfig {
 export interface IMessage {
   role: string;
   content: string;
+}
+
+export interface Step {
+  completion: boolean;
+  description: string;
 }
 
 export interface IAIClient {

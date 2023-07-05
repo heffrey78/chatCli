@@ -38,8 +38,12 @@ Currently, Postgres is only used for saving and opening conversations. You can r
 
 ### Docker notes
 
+docker pull ankane/pgvector
+
 docker run --name chat-postgres -e POSTGRES_PASSWORD=BigBlockRed15! -e PGDATA=/var/lib/postgresql/data/pgdata -v postgres-data:/var/lib/postgresql/data -p 5432:5432 --rm ankane/pgvector
 
 npx typeorm-ts-node-esm migration:generate ./src/migration/{update-class-name} -d ./src/data-source.ts
 
-psql.exe" "host=localhost port=5432 dbname=chatcli user=postgres sslmode=prefer connect_timeout=10"
+psql.exe "host=localhost port=5432 dbname=chatcli user=postgres sslmode=prefer connect_timeout=10"
+
+psql "host=localhost port=5432 dbname=chatcli user=postgres sslmode=prefer connect_timeout=10"
