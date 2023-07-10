@@ -1,9 +1,8 @@
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import { inject, injectable } from "inversify";
-import { Conversation } from "../../database/entities/Conversation";
-import { Message } from "../../database/entities/Message";
 import { TYPES, IMessage, ConversationHandler } from "../../types";
 import { IConfiguration } from "../../interfaces/IConfiguration";
+import { Conversation, Message } from "../../db";
 
 @injectable()
 export class SaveMessagesCommand implements ICommandStrategy {  
@@ -22,15 +21,13 @@ export class SaveMessagesCommand implements ICommandStrategy {
     const handlerName = "postgres";
     let handler = this.handlerFactory(handlerName);
 
-    let conversation = new Conversation();
-    conversation.name = args[0];
+    let conversation = new Conversation({name: args[0]});
 
     let messages: Message[] = [];
     iMessages.forEach(async (imessage) => {
       let  message = new Message();
       message.role = imessage.role;
       message.content = imessage.content;
-      message.conversation = conversation;
       messages.push(message);
     });
 

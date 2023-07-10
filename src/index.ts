@@ -1,9 +1,8 @@
 import * as dotenv from "dotenv";
 import readline from "readline";
-import { TYPES, IHandler, IMessage } from "./types";
+import { TYPES, Handler, IMessage } from "./types";
 import { container } from "./inversify.config";
-import { AppDataSource } from "./data-source";
-import { createDatabase } from "typeorm-extension";
+import { sequelize } from "./db";
 
 dotenv.config();
 
@@ -26,7 +25,7 @@ async function promptUser(): Promise<void> {
     if (line.trim() == ".") {
       count = count + 1;
       if (count >= 1) {
-        const chatHandler = container.get<IHandler>(TYPES.Handler);
+        const chatHandler = container.get<Handler>(TYPES.Handler);
         exit = await chatHandler.handle(prompt, messages);
         prompt = "";
         process.stdout.write("> ");
@@ -52,15 +51,11 @@ async function promptUser(): Promise<void> {
 }
 
 async function startup(): Promise<void> {
-  if(process.env.USE_POSTGRES === "true"){
-    createDatabase({ options: AppDataSource.options }).then(async () => {
-      await AppDataSource.initialize();
-      await AppDataSource.runMigrations();
-      await promptUser();
-  }).catch((error) => console.log("Error: ", error));
-  } else {
-    await promptUser();
-  }
+  if(process.env.USE_POSTGRES === "true") {
+    await sequelize.authenticate();
+    await sequelize.sync();
+    await promptUser();  
+  } 
 }
 
 startup();

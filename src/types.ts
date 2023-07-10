@@ -1,4 +1,4 @@
-import { Conversation } from "./database/entities/Conversation";
+import { Conversation } from "./db";
 import { ICommandStrategy } from "./interfaces/ICommandStrategy";
 import { ISearch } from "./interfaces/web/ISearch";
 
@@ -45,7 +45,7 @@ export function extractCommandLabels(): string[] {
   return Object.keys(TYPES.Command);
 }
 
-export interface IHandler {
+export interface Handler {
   handle(prompt: string, messages:  IMessage[]): Promise<boolean | undefined>;
 }
 

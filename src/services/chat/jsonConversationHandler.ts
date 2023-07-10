@@ -1,20 +1,24 @@
 import { injectable } from "inversify";
-import { Conversation } from "../../database/entities/Conversation";
+import { Conversation, Message } from "../../db";
 import { IMessage, ConversationHandler } from "../../types";
-import { readMessagesFromFile, saveMessagesToFile, listFilesInDirectory } from "../file/fileManager";
-import { Message } from "../../database/entities/Message";
+import {
+  readMessagesFromFile,
+  saveMessagesToFile,
+  listFilesInDirectory,
+} from "../file/fileManager";
+
 
 @injectable()
 export class JsonConversationHandler implements ConversationHandler {
   async save(conversation: Conversation): Promise<void> {
     let iMessages: IMessage[] = [];
 
-    if(conversation.messages !== undefined){
-        conversation.messages.forEach((message) => {
-            iMessages.push({role: message.role, content: message.content});
-        })
+    if (conversation.messages !== undefined) {
+      conversation.messages.forEach((message) => {
+        iMessages.push({ role: message.role, content: message.content });
+      });
     }
-    
+
     await saveMessagesToFile(conversation.name, iMessages);
   }
 
@@ -26,10 +30,10 @@ export class JsonConversationHandler implements ConversationHandler {
     const readMessages = await readMessagesFromFile(name);
 
     readMessages.forEach((imessage: IMessage) => {
-        let message: Message = new Message();
-        message.role = imessage.role;
-        message.content = imessage.content;
-        messages.push(message);
+      let message: Message = new Message();
+      message.role = imessage.role;
+      message.content = imessage.content;
+      messages.push(message);
     });
 
     conversation.messages = messages;

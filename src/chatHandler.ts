@@ -1,12 +1,12 @@
 import { injectable, inject } from "inversify";
 import { container } from "./inversify.config";
-import { TYPES, IMessage, ParsedPrompt, IHandler } from "./types";
+import { TYPES, IMessage, ParsedPrompt, Handler } from "./types";
 import { ICommandStrategy } from "./interfaces/ICommandStrategy";
 import { SystemInformation } from "./services/system/SystemInformation";
 import { Configuration } from "./config/Configuration";
 
 @injectable()
-class ChatHandler implements IHandler {
+class ChatHandler implements Handler {
   @inject(TYPES.SystemInformation) private systemInformation: SystemInformation;
   @inject(TYPES.Configuration) private configuration: Configuration;
 

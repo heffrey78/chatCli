@@ -20,7 +20,7 @@ import { IConfiguration } from "./interfaces/IConfiguration";
 import { ISystemInformation } from "./interfaces/system/ISystemInformation";
 import { Google as GoogleSearch } from "./services/web/google";
 import { SystemInformation } from "./services/system/SystemInformation";
-import { ICommandStrategy, ISearch, TYPES, IHandler, IAIClient, ConversationHandler } from "./types";
+import { ICommandStrategy, ISearch, TYPES, Handler, IAIClient, ConversationHandler } from "./types";
 import { GoogleCalendarCommand } from "./commands/web/googleCalendarCommand";
 import { SetSystemMessageCommand } from "./commands/message/setSystemMessageCommand";
 import { ChatHandler } from "./chatHandler";
@@ -36,7 +36,7 @@ const container = new Container();
 container.bind<IConfiguration>(TYPES.Configuration).to(Configuration).inSingletonScope();
 container.bind<ISystemInformation>(TYPES.SystemInformation).to(SystemInformation).inSingletonScope();
 container.bind<ISearch>(TYPES.SearchHandler).to(GoogleSearch).inSingletonScope();
-container.bind<IHandler>(TYPES.Handler).to(ChatHandler).inSingletonScope();
+container.bind<Handler>(TYPES.Handler).to(ChatHandler).inSingletonScope();
 container.bind<IAIClient>(TYPES.AiClient).to(OpenAiClient).inSingletonScope();
 
 container.bind<ICommandStrategy>(TYPES.Command.CALENDAR).to(GoogleCalendarCommand).inSingletonScope();
