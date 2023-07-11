@@ -14,6 +14,7 @@ const TYPES = {
     GOOGLE: Symbol.for("GoogleSearchCommand"),
     IMAGE: Symbol.for("CreateDallECommand"),
     IMPORT: Symbol.for("ImportMessageCommand"),
+    JIRA: Symbol.for("JiraQueryCommand"),
     LIST: Symbol.for("ListMessagesCommand"),
     CONVERSATIONS: Symbol.for("ListConversationsCommand"),
     OPEN: Symbol.for("OpenMessagesCommand"),
@@ -46,7 +47,7 @@ export function extractCommandLabels(): string[] {
 }
 
 export interface Handler {
-  handle(prompt: string, messages:  IMessage[]): Promise<boolean | undefined>;
+  handle(prompt: string, conversation: Conversation): Promise<boolean | undefined>;
 }
 
 export interface ConversationHandler {
@@ -59,19 +60,14 @@ export interface IConfig {
   [key: string]: any;
 }
 
-export interface IMessage {
-  role: string;
-  content: string;
-}
-
 export interface Step {
   completion: boolean;
   description: string;
 }
 
 export interface IAIClient {
-  complete(messages: IMessage[]): Promise<string>;
-  chat(messages: IMessage[]): Promise<string>;
+  complete(conversation: Conversation): Promise<string>;
+  chat(conversation: Conversation): Promise<string>;
   embed(inputText: string): Promise<number[]>;
   generateImage(prompt: string): Promise<string[]>
 }

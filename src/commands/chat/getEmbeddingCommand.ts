@@ -1,8 +1,9 @@
 import { ICommandStrategy } from '../../interfaces/ICommandStrategy';
 import { injectable, inject } from 'inversify';
-import { TYPES, IMessage } from "../../types";
+import { TYPES } from "../../types";
 import { OpenAiClient } from '../../services/openai/openAiClient';
 import { saveJsonFile } from "../../services/file/fileManager";
+import { Conversation } from '../../db';
 
 @injectable()
 export class GetEmbeddingCommand implements ICommandStrategy {
@@ -12,7 +13,7 @@ export class GetEmbeddingCommand implements ICommandStrategy {
     this.aiClient = aiClient;
   }
 
-  async execute(args: string[], messages: IMessage[]): Promise<boolean> {
+  async execute(args: string[], conversation: Conversation): Promise<boolean> {
     const inputText: string = args[0];
     const embedding: number[] = await this.aiClient.embed(inputText);
 

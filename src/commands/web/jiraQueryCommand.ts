@@ -1,13 +1,14 @@
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import { injectable } from "inversify";
+import { JiraHandler } from "../../services/web/jira/jiraHandler";
 import { Conversation } from "../../db";
 
 @injectable()
-export class ClearMessagesCommand implements ICommandStrategy {
+export class JiraQueryCommand implements ICommandStrategy {  
   async execute(args: string[], conversation: Conversation): Promise<boolean> {
-    conversation.id = 0;
-    conversation.name = "";
-    conversation.messages = [];
+    const handler = new JiraHandler();
+    const result = await handler.queryIssues(args[0]);
+    console.log(JSON.stringify(result));
     return false;
   }
 }

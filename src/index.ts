@@ -1,12 +1,13 @@
 import * as dotenv from "dotenv";
 import readline from "readline";
-import { TYPES, Handler, IMessage } from "./types";
+import { TYPES, Handler } from "./types";
 import { container } from "./inversify.config";
-import { sequelize } from "./db";
+import { Conversation, sequelize } from "./db";
 
 dotenv.config();
 
-let messages: IMessage[] = [];
+let conversation: Conversation = new Conversation();
+conversation.messages = [];
 let count = 0;
 
 async function promptUser(): Promise<void> {
@@ -26,7 +27,7 @@ async function promptUser(): Promise<void> {
       count = count + 1;
       if (count >= 1) {
         const chatHandler = container.get<Handler>(TYPES.Handler);
-        exit = await chatHandler.handle(prompt, messages);
+        exit = await chatHandler.handle(prompt, conversation);
         prompt = "";
         process.stdout.write("> ");
         if (exit) {

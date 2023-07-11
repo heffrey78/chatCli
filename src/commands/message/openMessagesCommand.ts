@@ -1,7 +1,8 @@
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import { inject, injectable } from "inversify";
-import { TYPES, IMessage, ConversationHandler } from "../../types";
+import { TYPES, ConversationHandler } from "../../types";
 import { IConfiguration } from "../../interfaces/IConfiguration";
+import { Conversation, Message } from "../../db";
 
 @injectable()
 export class OpenMessagesCommand implements ICommandStrategy {
@@ -16,18 +17,29 @@ export class OpenMessagesCommand implements ICommandStrategy {
     this.handlerFactory = factory;
   }
 
-  async execute(args: string[], messages: IMessage[]): Promise<boolean> {
-    const handlerName = "postgres";
-    let handler = this.handlerFactory(handlerName);
+  async execute(args: string[], conversation: Conversation): Promise<boolean> {
+    let retreievedConversation = await this.handlerFactory("postgres").load(args[0]);
 
-    let conversation = await handler.load(args[0]);
+    if(retreievedConversation) {
+      conversation.id = retreievedConversation.id;
+      conversation.name = retreievedConversation.name;
+      conversation.createdAt = retreievedConversation.createdAt;
+      conversation.updatedAt = retreievedConversation.updatedAt;
+      let messages: Message[] = [];
 
-    if(conversation?.messages !== undefined){
-      conversation?.messages.forEach((message: IMessage) => {
-        messages.push({ role: message.role, content: message.content });
+      retreievedConversation.messages?.forEach((retrievedMessage) => {
+        let message: Message = new Message();
+        message.id = retrievedMessage.id;
+        message.role = retrievedMessage.role;
+        message.content = retrievedMessage.content;
+        message.conversationId = retrievedMessage.conversationId;
+        message.createdAt = retrievedMessage.createdAt;
+        message.updatedAt = retrievedMessage.updatedAt;
+        messages.push(message);
       });
 
-      console.log(`Loaded messages from ${args[0]}`);
+      conversation.messages = messages;
+      console.log(`Loaded messages from ${conversation.name}`);
     }
 
     return false;

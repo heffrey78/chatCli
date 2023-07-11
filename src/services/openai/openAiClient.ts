@@ -7,8 +7,9 @@ import {
   ChatCompletionResponseMessageRoleEnum,
 } from "openai";
 import { Configuration } from "../../config/Configuration";
-import { TYPES, IMessage, IAIClient } from "../../types";
+import { TYPES, IAIClient } from "../../types";
 import extractAndWriteCodeToFile from "../code/codeManager";
+import { Conversation, Message } from "../../db";
 
 @injectable()
 class OpenAiClient implements IAIClient {
@@ -27,13 +28,13 @@ class OpenAiClient implements IAIClient {
     this.openAiApiClient = new OpenAIApi(this.openAIConfiguration);
   }
 
-  async chat(messages: IMessage[]): Promise<string> {
-    return await this.generateChatCompletion(messages);
+  async chat(conversation: Conversation): Promise<string> {
+    return await this.generateChatCompletion(conversation);
   }
 
-  async complete(messages: IMessage[]): Promise<string> {
+  async complete(conversation: Conversation): Promise<string> {
     try {
-      const response = await this.generateChatCompletion(messages);
+      const response = await this.generateChatCompletion(conversation);
       await extractAndWriteCodeToFile(response, this.outputDirectory);
 
       return response;
@@ -75,9 +76,9 @@ class OpenAiClient implements IAIClient {
     }
   }
 
-  private async generateChatCompletion(messages: IMessage[]): Promise<string> {
+  private async generateChatCompletion(conversation: Conversation): Promise<string> {
     try {
-      const request = this.getCompletionRequest(messages);
+      const request = this.getCompletionRequest(conversation);
 
       const completion = await this.openAiApiClient.createChatCompletion(
         request
@@ -100,7 +101,7 @@ class OpenAiClient implements IAIClient {
     }
   }
 
-  private getRole(message: IMessage): ChatCompletionResponseMessageRoleEnum {
+  private getRole(message: Message): ChatCompletionResponseMessageRoleEnum {
     if (
       Object.values(ChatCompletionResponseMessageRoleEnum).findIndex(
         (role) => role === message.role
@@ -115,22 +116,22 @@ class OpenAiClient implements IAIClient {
     }
   }
 
-  private getCompletionRequest(
-    messages: IMessage[]
-  ): CreateChatCompletionRequest {
+  private getCompletionRequest(conversation: Conversation): CreateChatCompletionRequest {
     let requestMessages: ChatCompletionRequestMessage[] = [];
-
-    messages.forEach((message) => {
-      const role = this.getRole(message);
-      requestMessages.push({ role: role, content: message.content });
-    });
-
-    const request: CreateChatCompletionRequest = {
-      model: this.configuration.model,
-      messages: requestMessages,
-    };
-
-    return request;
+    if(conversation.messages) {
+      conversation.messages.forEach((message) => {
+        const role = this.getRole(message);
+        requestMessages.push({ role: role, content: message.content });
+      });
+  
+      const request: CreateChatCompletionRequest = {
+        model: this.configuration.model,
+        messages: requestMessages,
+      };
+      return request;
+    } else {
+      throw new Error("Conversation is null.");
+    }
   }
 }
 

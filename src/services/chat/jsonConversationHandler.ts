@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { Conversation, Message } from "../../db";
-import { IMessage, ConversationHandler } from "../../types";
+import { ConversationHandler } from "../../types";
 import {
   readMessagesFromFile,
   saveMessagesToFile,
@@ -11,15 +11,7 @@ import {
 @injectable()
 export class JsonConversationHandler implements ConversationHandler {
   async save(conversation: Conversation): Promise<void> {
-    let iMessages: IMessage[] = [];
-
-    if (conversation.messages !== undefined) {
-      conversation.messages.forEach((message) => {
-        iMessages.push({ role: message.role, content: message.content });
-      });
-    }
-
-    await saveMessagesToFile(conversation.name, iMessages);
+    await saveMessagesToFile(conversation.name, conversation.messages);
   }
 
   async load(name: string): Promise<Conversation | null> {
@@ -29,10 +21,10 @@ export class JsonConversationHandler implements ConversationHandler {
 
     const readMessages = await readMessagesFromFile(name);
 
-    readMessages.forEach((imessage: IMessage) => {
+    readMessages.forEach((readMessage: Message) => {
       let message: Message = new Message();
-      message.role = imessage.role;
-      message.content = imessage.content;
+      message.role = readMessage.role;
+      message.content = readMessage.content;
       messages.push(message);
     });
 

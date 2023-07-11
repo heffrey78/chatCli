@@ -30,6 +30,7 @@ import { JsonConversationHandler } from "./services/chat/jsonConversationHandler
 import { ListConversationsCommand } from "./commands/message/listConversationsCommand";
 import { ImportMessagesCommand } from "./commands/message/importMessageCommand";
 import { ExportMessagesCommand } from "./commands/message/exportMessageCommand";
+import { JiraQueryCommand } from "./commands/web/jiraQueryCommand";
 
 const container = new Container();
 
@@ -48,6 +49,7 @@ container.bind<ICommandStrategy>(TYPES.Command.GETDIR).to(AddDirectoryCommand).i
 container.bind<ICommandStrategy>(TYPES.Command.GETEMBEDDING).to(GetEmbeddingCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.GOOGLE).to(GoogleSearchCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.IMPORT).to(ImportMessagesCommand).inSingletonScope();
+container.bind<ICommandStrategy>(TYPES.Command.JIRA).to(JiraQueryCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.LIST).to(ListMessagesCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.CONVERSATIONS).to(ListConversationsCommand).inSingletonScope();
 container.bind<ICommandStrategy>(TYPES.Command.OPEN).to(OpenMessagesCommand).inSingletonScope();

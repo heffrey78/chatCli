@@ -5,44 +5,53 @@ import { Conversation, Message } from "../../db";
 @injectable()
 export class PostgresConversationHandler implements ConversationHandler {
   async save(conversation: Conversation): Promise<void> {
+    let retrievedConversation = await Conversation.findOne({
+      where: { name: conversation.name },
+    });
 
-    let retrievedConversation = await Conversation.findOne({where: {name: conversation.name}});
-
-    if(retrievedConversation === null){
-      conversation = await Conversation.create({ name: conversation.name });
-    } else {
-      await Conversation.update({ name: retrievedConversation.name }, 
-      {
-        where: { id: retrievedConversation.id }, 
-        returning: true, 
+    if (retrievedConversation === null) {
+      retrievedConversation = await Conversation.create({
+        name: conversation.name,
       });
+    } else {
+      await Conversation.update(
+        { name: retrievedConversation.name },
+        {
+          where: { id: retrievedConversation.id },
+          returning: true,
+        }
+      );
     }
 
     let id: number;
-    if(conversation.id !== undefined) {
-      id = conversation.id;
+    if (retrievedConversation.id !== undefined) {
+      id = retrievedConversation.id;
     } else {
       throw new Error("Conversation id cannot be null.");
     }
 
     if (conversation.messages !== undefined) {
       conversation.messages.forEach(async (message) => {
-        if(!message.id){
-          await Message.create({ 
-            role: message.role, 
-            content: message.content, 
-            conversationId: id
+        if (!message.id || message.id === null) {
+          await Message.create({
+            role: message.role,
+            content: message.content,
+            conversationId: id,
           });
         } else {
-          await Message.update({ 
-            role: message.role, 
-            content: message.content, 
-            conversationId: message.conversationId
-          }, { 
-            where: { 
-              id: message.id
+          await Message.update(
+            {
+              role: message.role,
+              content: message.content,
+              conversationId: message.conversationId,
             },
-            returning: true});
+            {
+              where: {
+                id: message.id,
+              },
+              returning: true,
+            }
+          );
         }
       });
     }
@@ -51,7 +60,7 @@ export class PostgresConversationHandler implements ConversationHandler {
   async load(name: string): Promise<Conversation | null> {
     const conversation = await Conversation.findOne({
       where: { name },
-      include: [Message],
+      include: [{ model: Message, as: "messages" }],
     });
 
     return conversation;

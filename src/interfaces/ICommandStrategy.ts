@@ -1,3 +1,5 @@
+import { Conversation } from "../db";
+
 export interface ICommandStrategy {
-    execute(args: string[], messages: any[]): Promise<boolean>;
+    execute(args: string[], conversation: Conversation): Promise<boolean>;
   }

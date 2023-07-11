@@ -1,7 +1,8 @@
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import { inject, injectable } from "inversify";
-import { TYPES, IMessage, ConversationHandler } from "../../types";
+import { TYPES, ConversationHandler } from "../../types";
 import { IConfiguration } from "../../interfaces/IConfiguration";
+import { Conversation } from "../../db";
 
 @injectable()
 export class ExportMessagesCommand implements ICommandStrategy {
@@ -16,23 +17,19 @@ export class ExportMessagesCommand implements ICommandStrategy {
     this.handlerFactory = factory;
   }
 
-  async execute(args: string[], messages: IMessage[]): Promise<boolean> {
+  async execute(args: string[], conversation: Conversation): Promise<boolean> {
     const jsonHandlerName = "json";
     const postgresHandlerName = "postgres";
     let jsonHandler = this.handlerFactory(jsonHandlerName);
     let postgresHandler = this.handlerFactory(postgresHandlerName);
-    let conversation = await postgresHandler.load(args[0]);
+    let retrievedConversation = await postgresHandler.load(args[0]);
 
-    if(conversation?.messages !== undefined){
-      conversation?.messages.forEach((message: IMessage) => {
-        messages.push({ role: message.role, content: message.content });
-      });
-
-     await jsonHandler.save(conversation);
-
+    if(retrievedConversation){
+      await jsonHandler.save(retrievedConversation);
+      conversation = retrievedConversation;
       console.log(`Exported messages from ${args[0]}`);
     }
-
+       
     return false;
   }
 }

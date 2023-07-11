@@ -1,9 +1,10 @@
 import { injectable, inject } from "inversify";
 import { container } from "./inversify.config";
-import { TYPES, IMessage, ParsedPrompt, Handler } from "./types";
+import { TYPES, ParsedPrompt, Handler } from "./types";
 import { ICommandStrategy } from "./interfaces/ICommandStrategy";
 import { SystemInformation } from "./services/system/SystemInformation";
 import { Configuration } from "./config/Configuration";
+import { Conversation, Message } from "./db";
 
 @injectable()
 class ChatHandler implements Handler {
@@ -20,7 +21,7 @@ class ChatHandler implements Handler {
 
   public async handle(
     prompt: string,
-    messages: IMessage[]
+    conversation: Conversation
   ): Promise<boolean | undefined> {
     const parsedPrompt = this.parsePrompt(prompt);
     const commandName = parsedPrompt
@@ -41,16 +42,19 @@ class ChatHandler implements Handler {
       const setSystemMessageCommand = container.get<ICommandStrategy>(
         TYPES.Command.SETSYSTEM
       );
-      await setSystemMessageCommand.execute([systemMessage], messages);
+      await setSystemMessageCommand.execute([systemMessage], conversation);
     }
 
     if (!commandName) {
-      messages.push({ role: "user", content: prompt });
+      let message: Message = new Message();
+      message.role = "user";
+      message.content = prompt;
+      conversation.messages?.push(message);
     }
 
     if (commandSymbol) {
       const command = container.get<ICommandStrategy>(commandSymbol);
-      return await command.execute(args, messages);
+      return await command.execute(args, conversation);
     } else {
       console.log("Unknown command");
       return false;

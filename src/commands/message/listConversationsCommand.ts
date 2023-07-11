@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import { IConfiguration } from "../../interfaces/IConfiguration";
-import { ConversationHandler, ICommandStrategy, IMessage, TYPES } from "../../types";
+import { ConversationHandler, ICommandStrategy, TYPES } from "../../types";
+import { Conversation } from "../../db";
 
 @injectable()
 export class ListConversationsCommand implements ICommandStrategy {
@@ -15,7 +16,7 @@ export class ListConversationsCommand implements ICommandStrategy {
       this.handlerFactory = factory;
     }
 
-    async execute(args: string[], messages: IMessage[]): Promise<boolean> {
+    async execute(args: string[], conversation: Conversation): Promise<boolean> {
         const handlerName =  "postgres";
         let handler = this.handlerFactory(handlerName);
         const list = await handler.list();

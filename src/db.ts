@@ -24,6 +24,7 @@ if (!dbName || !userName || !password) throw new Error("No db creds");
 const sequelize = new Sequelize(dbName, userName, password, {
   host: "localhost",
   dialect: "postgres",
+  logging: false
 });
 
 class Conversation extends Model<
@@ -75,7 +76,7 @@ class Message extends Model<
 Conversation.init(
   {
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
@@ -95,7 +96,7 @@ Conversation.init(
 Message.init(
   {
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
@@ -108,7 +109,7 @@ Message.init(
         allowNull: false,
       },
     conversationId: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     createdAt: DataTypes.DATE,

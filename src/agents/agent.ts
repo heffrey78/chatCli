@@ -1,15 +1,16 @@
 import { inject, injectable } from "inversify";
-import { IMessage, Step } from "../types";
+import { Step } from "../types";
+import { Conversation } from "../db";
 
 @injectable()
 export class Agent {
-    private messages: IMessage[];
-    private steps: Step[];
+    // private conversation: Conversation;
+    // private steps: Step[];
 
-    constructor(@inject("IMessage") messages: IMessage[], @inject("Step") steps: Step[]){
-        this.messages = messages;
-        this.steps = steps;
-    }
+    // constructor(@inject("IMessage") conversation: Conversation, @inject("Step") steps: Step[]){
+    //     this.conversation = conversation;
+    //     this.steps = steps;
+    // }
 
     async execute(): Promise<void> {
 
