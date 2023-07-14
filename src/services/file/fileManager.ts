@@ -124,7 +124,7 @@ export function readImage(path: string): ReadStream {
   return createReadStream(path);
 }
 
-async function listFilesInDirectory(directory: string): Promise<string[] | undefined> {
+async function listFilesInDirectory(directory: string): Promise<string[]> {
   try {
     // Read the contents of the given directory
     const entries: string[] = await fs.readdir(directory);
@@ -152,6 +152,8 @@ async function listFilesInDirectory(directory: string): Promise<string[] | undef
       console.error(`An unexpected error occurred while reading ${directory}`);
     }
   }
+
+  return [];
 }
 
 async function getDirectoryStructure(

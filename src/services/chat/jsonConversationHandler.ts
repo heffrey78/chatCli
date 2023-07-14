@@ -33,7 +33,7 @@ export class JsonConversationHandler implements ConversationHandler {
     return conversation;
   }
 
-  async list(): Promise<string[] | undefined> {
+  async list(): Promise<string[]> {
     return await listFilesInDirectory("messages");
   }
 }

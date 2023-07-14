@@ -55,18 +55,24 @@ export class PostgresConversationHandler implements ConversationHandler {
         }
       });
     }
+
+    conversation = await this.load(conversation.name);
   }
 
-  async load(name: string): Promise<Conversation | null> {
+  async load(name: string): Promise<Conversation> {
     const conversation = await Conversation.findOne({
       where: { name },
       include: [{ model: Message, as: "messages" }],
     });
 
+    if(conversation === null){
+      throw new Error("Conversation not found");
+    }
+
     return conversation;
   }
 
-  async list(): Promise<string[] | undefined> {
+  async list(): Promise<string[]> {
     const conversations = await Conversation.findAll();
     return conversations.map((conversation) => conversation.name);
   }
