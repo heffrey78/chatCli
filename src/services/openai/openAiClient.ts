@@ -4,7 +4,7 @@ import {
   OpenAIApi,
   CreateChatCompletionRequest,
   ChatCompletionRequestMessage,
-  ChatCompletionResponseMessageRoleEnum,
+  ChatCompletionResponseMessageRoleEnum
 } from "openai";
 import { Configuration } from "../../config/Configuration";
 import { TYPES, IAIClient, IConversation, IMessage } from "../../types";
@@ -77,7 +77,7 @@ class OpenAiClient implements IAIClient {
 
   private async generateChatCompletion(conversation: IConversation): Promise<string> {
     try {
-      const request = this.getCompletionRequest(conversation);
+      const request = this.getDefaultCompletionRequest(conversation);
 
       const completion = await this.openAiApiClient.createChatCompletion(
         request
@@ -86,7 +86,8 @@ class OpenAiClient implements IAIClient {
       if (
         completion.data === undefined ||
         completion.data.choices.length === 0 ||
-        completion.data.choices[0].message === undefined
+        completion.data.choices[0].message === undefined || 
+        completion.data.choices[0].message.content === undefined
       ) {
         throw "No response";
       }
@@ -96,6 +97,52 @@ class OpenAiClient implements IAIClient {
       return response;
     } catch (error) {
       console.error("Error generating chat completion:", error);
+      return "An error occurred. Please try again.";
+    }
+  }
+
+  async getFunction(functionInput: any, conversation: IConversation): Promise<string> {
+    try {
+      // Add the function input to the chat completion request
+      const request = this.getCompletionRequest(conversation, "gpt-3.5-turbo");
+      request.functions = [functionInput];
+
+      // Make the API call
+      const completion = await this.openAiApiClient.createChatCompletion(request);
+
+      if (
+        completion.data === undefined ||
+        completion.data.choices.length === 0 ||
+        completion.data.choices[0].message === undefined || 
+        completion.data.choices[0].message.content === undefined
+      ) {
+        throw "No response";
+      }
+
+      // Check if a function was called
+      if (completion.data.choices[0].message.function_call) {
+        // Handle the function call. This could be a call to an external API,
+        // running a database query, etc.
+        const functionCall = completion.data.choices[0].message.function_call;
+        const functionName = functionCall.name;
+        const functionArgs = JSON.parse(functionCall.arguments || "");
+
+        //const functionResponse = await this.callFunctionByName(functionName, functionArgs);
+
+        // Append the function response to the conversation
+        // conversation.messages.push({
+        //   role: 'function',
+        //   content: JSON.stringify(functionResponse),
+        // });
+
+        return "test";
+      }
+
+      // If no function was called, just return the response
+      const response: string = completion.data.choices[0].message.content;
+      return response;
+    } catch (error) {
+      console.error("Error calling function:", error);
       return "An error occurred. Please try again.";
     }
   }
@@ -115,7 +162,11 @@ class OpenAiClient implements IAIClient {
     }
   }
 
-  private getCompletionRequest(conversation: IConversation): CreateChatCompletionRequest {
+  private getDefaultCompletionRequest(conversation: IConversation): CreateChatCompletionRequest {
+    return this.getCompletionRequest(conversation, this.configuration.model);
+  }
+
+  private getCompletionRequest(conversation: IConversation, model: string): CreateChatCompletionRequest {
     let requestMessages: ChatCompletionRequestMessage[] = [];
     if(conversation.messages) {
       conversation.messages.forEach((message) => {
@@ -124,7 +175,7 @@ class OpenAiClient implements IAIClient {
       });
   
       const request: CreateChatCompletionRequest = {
-        model: this.configuration.model,
+        model: model,
         messages: requestMessages,
       };
       return request;
