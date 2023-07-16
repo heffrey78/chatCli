@@ -1,13 +1,11 @@
 import * as dotenv from "dotenv";
 import readline from "readline";
-import { TYPES, Handler } from "./types";
+import { TYPES, ICommandStrategy } from "./types";
 import { container } from "./inversify.config";
-import { Conversation, sequelize } from "./db";
+import { sequelize } from "./db";
 
 dotenv.config();
 
-let conversation: Conversation = new Conversation();
-conversation.messages = [];
 let count = 0;
 
 async function promptUser(): Promise<void> {
@@ -22,12 +20,13 @@ async function promptUser(): Promise<void> {
 
   process.stdout.write("> ");
 
-  rl.on("line", async (line) => {
+  rl.on("line", async (line) =>
+   {
     if (line.trim() == ".") {
       count = count + 1;
       if (count >= 1) {
-        const chatHandler = container.get<Handler>(TYPES.Handler);
-        exit = await chatHandler.handle(prompt, conversation);
+        const chatHandler = container.get<ICommandStrategy>(TYPES.Command.ChatHandler);
+        exit = await chatHandler.execute([prompt]);
         prompt = "";
         process.stdout.write("> ");
         if (exit) {

@@ -1,13 +1,25 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import extractAndWriteCodeToFile from "../../services/code/codeManager";
-import { Conversation } from "../../db";
+import { ConversationService } from "../../services/conversation/conversationService";
+import { TYPES } from "../../types";
 
 @injectable()
 export class SaveCodeCommand implements ICommandStrategy {
-  async execute(args: string[], conversation: Conversation): Promise<boolean> {
+  @inject(TYPES.Services.ConversationService)
+  private conversationService: ConversationService;
+
+  constructor(
+    @inject(TYPES.Services.ConversationService)
+    conversationService: ConversationService
+  ) {
+    this.conversationService = conversationService;
+  }
+  
+  
+  async execute(args: string[]): Promise<boolean> {
     let index = parseInt(args[0]);
-    let message = conversation.messages?.at(index);
+    let message = this.conversationService.getMessage(index);
     if(message){
       await extractAndWriteCodeToFile(message.content, './output/');
       console.log("Code saved.");

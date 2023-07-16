@@ -1,33 +1,35 @@
 import { injectable, inject } from "inversify";
 import { container } from "./inversify.config";
-import { TYPES, ParsedPrompt, Handler } from "./types";
+import { TYPES, ParsedPrompt } from "./types";
 import { ICommandStrategy } from "./interfaces/ICommandStrategy";
 import { SystemInformation } from "./services/system/SystemInformation";
 import { Configuration } from "./config/Configuration";
-import { Conversation, Message } from "./db";
+import { ConversationService } from "./services/conversation/conversationService";
 
 @injectable()
-class ChatHandler implements Handler {
+class ChatHandler implements ICommandStrategy {
   @inject(TYPES.SystemInformation) private systemInformation: SystemInformation;
   @inject(TYPES.Configuration) private configuration: Configuration;
+  @inject(TYPES.Services.ConversationService) private conversationService: ConversationService;
 
   public constructor(
     @inject(TYPES.SystemInformation) systemInformation: SystemInformation,
-    @inject(TYPES.Configuration) configuration: Configuration
+    @inject(TYPES.Configuration) configuration: Configuration,
+    @inject(TYPES.Services.ConversationService) conversationService: ConversationService
   ) {
     this.systemInformation = systemInformation;
     this.configuration = configuration;
+    this.conversationService = conversationService;
   }
 
-  public async handle(
-    prompt: string,
-    conversation: Conversation
-  ): Promise<boolean | undefined> {
-    const parsedPrompt = this.parsePrompt(prompt);
+  public async execute(
+    args: string[]
+  ): Promise<boolean> {
+    const parsedPrompt = this.parsePrompt(args[0]);
     const commandName = parsedPrompt
       ? parsedPrompt.command.replace(/[\r\n]/gm, "").toUpperCase()
       : null;
-    const args = parsedPrompt ? parsedPrompt.args : [];
+    const derivedargs = parsedPrompt ? parsedPrompt.args : args;
 
     const commandSymbol = commandName
       ? TYPES.Command[commandName]
@@ -35,26 +37,9 @@ class ChatHandler implements Handler {
       ? TYPES.Command["GenerateCodeCommand"]
       : TYPES.Command["GenerateChatCommand"];
 
-    if (commandSymbol == TYPES.Command["GenerateCodeCommand"]) {
-      const systemMessage = `Development should target a system with the following information: ${JSON.stringify(
-        this.systemInformation
-      )} \r\n Act as an expert in mentioned technologies. Use best practices. Create a directory structure, and use it to add a comment at the top of each file. The comment should only be an appropriate filename with no other information`;
-      const setSystemMessageCommand = container.get<ICommandStrategy>(
-        TYPES.Command.SETSYSTEM
-      );
-      await setSystemMessageCommand.execute([systemMessage], conversation);
-    }
-
-    if (!commandName) {
-      let message: Message = new Message();
-      message.role = "user";
-      message.content = prompt;
-      conversation.messages?.push(message);
-    }
-
     if (commandSymbol) {
       const command = container.get<ICommandStrategy>(commandSymbol);
-      return await command.execute(args, conversation);
+      return await command.execute(derivedargs);
     } else {
       console.log("Unknown command");
       return false;

@@ -7,9 +7,8 @@ import {
   ChatCompletionResponseMessageRoleEnum,
 } from "openai";
 import { Configuration } from "../../config/Configuration";
-import { TYPES, IAIClient } from "../../types";
+import { TYPES, IAIClient, IConversation, IMessage } from "../../types";
 import extractAndWriteCodeToFile from "../code/codeManager";
-import { Conversation, Message } from "../../db";
 
 @injectable()
 class OpenAiClient implements IAIClient {
@@ -28,11 +27,11 @@ class OpenAiClient implements IAIClient {
     this.openAiApiClient = new OpenAIApi(this.openAIConfiguration);
   }
 
-  async chat(conversation: Conversation): Promise<string> {
+  async chat(conversation: IConversation): Promise<string> {
     return await this.generateChatCompletion(conversation);
   }
 
-  async complete(conversation: Conversation): Promise<string> {
+  async complete(conversation: IConversation): Promise<string> {
     try {
       const response = await this.generateChatCompletion(conversation);
       await extractAndWriteCodeToFile(response, this.outputDirectory);
@@ -76,7 +75,7 @@ class OpenAiClient implements IAIClient {
     }
   }
 
-  private async generateChatCompletion(conversation: Conversation): Promise<string> {
+  private async generateChatCompletion(conversation: IConversation): Promise<string> {
     try {
       const request = this.getCompletionRequest(conversation);
 
@@ -101,7 +100,7 @@ class OpenAiClient implements IAIClient {
     }
   }
 
-  private getRole(message: Message): ChatCompletionResponseMessageRoleEnum {
+  private getRole(message: IMessage): ChatCompletionResponseMessageRoleEnum {
     if (
       Object.values(ChatCompletionResponseMessageRoleEnum).findIndex(
         (role) => role === message.role
@@ -116,7 +115,7 @@ class OpenAiClient implements IAIClient {
     }
   }
 
-  private getCompletionRequest(conversation: Conversation): CreateChatCompletionRequest {
+  private getCompletionRequest(conversation: IConversation): CreateChatCompletionRequest {
     let requestMessages: ChatCompletionRequestMessage[] = [];
     if(conversation.messages) {
       conversation.messages.forEach((message) => {

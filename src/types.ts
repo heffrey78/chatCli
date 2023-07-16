@@ -1,4 +1,4 @@
-import { Conversation } from "./db";
+import { ConversationDto } from "./dtos/ConversationDto";
 import { ICommandStrategy } from "./interfaces/ICommandStrategy";
 import { ISearch } from "./interfaces/web/ISearch";
 
@@ -26,19 +26,24 @@ const TYPES = {
     GenerateCodeCommand: Symbol.for("GenerateCodeCommand"),
     GenerateChatCommand: Symbol.for("GenerateChatCommand"),
     SaveMessagesCommand: Symbol.for("SaveMessagesCommand"),
-  } as CommandSymbols,
+    ChatHandler: Symbol.for("ChatHandler")
+  } as Symbols,
+  Services: {
+    ConversationService: Symbol.for("ConversationService")
+  } as Symbols,
   Configuration: Symbol.for("Configuration"),
   SystemInformation: Symbol.for("SystemInformation"),
   ICommandStrategy: Symbol.for("ICommandStrategy"),
   SearchHandler: Symbol.for("ISearch"),
-  Handler: Symbol.for("IHandler"),
   AiClient: Symbol.for("IAiClient"),
-  MessageClient: Symbol.for("MessageClient")
+  MessageClient: Symbol.for("MessageClient"),
+  IConversation: Symbol.for("IConversation"),
+  IContext: Symbol.for("IContext")
 };
 
 export { TYPES, ISearch, ICommandStrategy };
 
-type CommandSymbols = {
+type Symbols = {
   [key: string]: symbol;
 };
 
@@ -46,28 +51,36 @@ export function extractCommandLabels(): string[] {
   return Object.keys(TYPES.Command);
 }
 
-export interface Handler {
-  handle(prompt: string, conversation: Conversation): Promise<boolean | undefined>;
+export interface ConversationRepository {
+  save(conversation: ConversationDto): Promise<void>;
+  load(name: string): Promise<ConversationDto>;
+  list(): Promise<string[] | undefined>;
 }
 
-export interface ConversationHandler {
-  save(conversation: Conversation): Promise<void>;
-  load(name: string): Promise<Conversation | null>;
-  list(): Promise<string[] | undefined>;
+export interface IContext {
+  conversation: IConversation;
+}
+
+export interface IConversation {
+  id: number;
+  name: string;
+  messages: IMessage[];
+}
+
+export interface IMessage {
+  id: number;
+  role: string;
+  content: string;
+  conversationId: number;
 }
 
 export interface IConfig {
   [key: string]: any;
 }
 
-export interface Step {
-  completion: boolean;
-  description: string;
-}
-
 export interface IAIClient {
-  complete(conversation: Conversation): Promise<string>;
-  chat(conversation: Conversation): Promise<string>;
+  complete(conversation: IConversation): Promise<string>;
+  chat(conversation: IConversation): Promise<string>;
   embed(inputText: string): Promise<number[]>;
   generateImage(prompt: string): Promise<string[]>
 }

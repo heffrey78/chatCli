@@ -3,7 +3,6 @@ import { IConfiguration } from "../../interfaces/IConfiguration";
 import { inject, injectable } from "inversify";
 import { TYPES, IConfig } from "../../types";
 import ConfigFile from "../../config/ConfigFile";
-import { Conversation } from "../../db";
 
 @injectable()
 export class SaveConfigCommand implements ICommandStrategy {
@@ -15,7 +14,7 @@ export class SaveConfigCommand implements ICommandStrategy {
     this.configuration = configuration;
   }
 
-  async execute(args: string[], conversation: Conversation): Promise<boolean> {
+  async execute(args: string[]): Promise<boolean> {
     const config: IConfig = 
     new ConfigFile(
       this.configuration.model,

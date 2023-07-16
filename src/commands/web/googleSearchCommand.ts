@@ -1,17 +1,24 @@
 import { inject, injectable } from "inversify";
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import { TYPES, ISearch, SearchResult } from "../../types";
-import { Conversation, Message } from "../../db";
+import { ConversationService } from "../../services/conversation/conversationService";
 
 @injectable()
 export class GoogleSearchCommand implements ICommandStrategy {
-  search: ISearch;
+  @inject(TYPES.SearchHandler) private search: ISearch;
+  @inject(TYPES.Services.ConversationService)
+  private conversationService: ConversationService;
 
-  public constructor(@inject(TYPES.SearchHandler) search: ISearch) {
+  public constructor(
+    @inject(TYPES.SearchHandler) search: ISearch,
+    @inject(TYPES.Services.ConversationService)
+    conversationService: ConversationService
+    ) {
     this.search = search;
+    this.conversationService = conversationService;
   }
 
-  async execute(args: string[], conversation: Conversation): Promise<boolean> {
+  async execute(args: string[]): Promise<boolean> {
     const result = await this.search.execute(args[0]);
     const escapedResults = result.map((r: SearchResult) => ({
         ...r,
@@ -29,10 +36,7 @@ export class GoogleSearchCommand implements ICommandStrategy {
         console.log(line);
       });
 
-      let message: Message = new Message();
-      message.role = "user";
-      message.content = lines.replace(/\\"/g, '').replace(/"/g, '');    
-      conversation.messages?.push(message);   
+      this.conversationService.addMessage("user", lines.replace(/\\"/g, '').replace(/"/g, ''));
 
       return false;
   }

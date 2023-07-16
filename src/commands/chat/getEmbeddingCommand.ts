@@ -3,17 +3,24 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from "../../types";
 import { OpenAiClient } from '../../services/openai/openAiClient';
 import { saveJsonFile } from "../../services/file/fileManager";
-import { Conversation } from '../../db';
+import { ConversationService } from '../../services/conversation/conversationService';
 
 @injectable()
 export class GetEmbeddingCommand implements ICommandStrategy {
-  @inject(TYPES.AiClient) private aiClient: OpenAiClient
+  @inject(TYPES.AiClient) private aiClient: OpenAiClient;
+  @inject(TYPES.Services.ConversationService)
+  private conversationService: ConversationService;
 
-  public constructor(@inject(TYPES.AiClient) aiClient: OpenAiClient) {
+  public constructor(
+    @inject(TYPES.AiClient) aiClient: OpenAiClient,
+    @inject(TYPES.Services.ConversationService)
+    conversationService: ConversationService
+    ) {
     this.aiClient = aiClient;
+    this.conversationService = conversationService;
   }
 
-  async execute(args: string[], conversation: Conversation): Promise<boolean> {
+  async execute(args: string[]): Promise<boolean> {
     const inputText: string = args[0];
     const embedding: number[] = await this.aiClient.embed(inputText);
 
