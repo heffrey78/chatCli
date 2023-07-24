@@ -1,9 +1,21 @@
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
-import { inject, injectable } from "inversify";
+import { inject } from "inversify";
 import { TYPES, ConversationRepository } from "../../types";
 import { ConversationService } from "../../services/conversation/conversationService";
+import { functionDetails } from "../../decorators/functionalDetails";
 
-@injectable()
+@functionDetails({
+  name: "ExportConversationCommand",
+  description: "Exports a conversation from the database to json",
+  parameters: {
+    args: {
+      type: "array",
+      items: { type: "string "},
+      description: "args[0] is the name of the conversation used for the db lookup and file save"
+    }
+  },
+  required: ["args"],
+})
 export class ExportConversationCommand implements ICommandStrategy {
   @inject("Factory<ConversationRepository>") private repositoryFactory: (named: string) => ConversationRepository;
   @inject(TYPES.Services.ConversationService) private conversationService: ConversationService;

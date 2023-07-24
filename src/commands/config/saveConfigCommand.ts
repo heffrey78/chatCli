@@ -1,10 +1,22 @@
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import { IConfiguration } from "../../interfaces/IConfiguration";
-import { inject, injectable } from "inversify";
+import { inject } from "inversify";
 import { TYPES, IConfig } from "../../types";
 import ConfigFile from "../../config/ConfigFile";
+import { functionDetails } from "../../decorators/functionalDetails";
 
-@injectable()
+@functionDetails({
+  name: "SaveConfigCommand",
+  description: "Saves a configuration setting",
+  parameters: {
+    args: {
+      type: "array",
+      items: { type: "string "},
+      description: "args[0] contains the configuration property. args[1] contains the configuration value."
+    }
+  },
+  required: ["args"],
+})
 export class SaveConfigCommand implements ICommandStrategy {
   configuration: IConfiguration;
 

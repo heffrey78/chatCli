@@ -1,10 +1,22 @@
-import { injectable, inject } from 'inversify';
+import { inject } from 'inversify';
 import { TYPES } from "../../types";
 import { OpenAiClient } from '../../services/openai/openAiClient';
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import { ConversationService } from '../../services/conversation/conversationService';
+import { functionDetails } from "../../decorators/functionalDetails";
 
-@injectable()
+@functionDetails({
+  name: "CreateDallECommand",
+  description: "Calls the OpenAI DALL-E generations endpoint creating 2 varations based on a prompt, adding the image urls to a new message",
+  parameters: {
+    args: {
+      type: "array",
+      items: { type: "string "},
+      description: "args[0] is the image generation prompt"
+    }
+  },
+  required: ["args"],
+})
 export class CreateDallECommand implements ICommandStrategy {
   @inject(TYPES.AiClient) private aiClient: OpenAiClient;
   @inject(TYPES.Services.ConversationService)

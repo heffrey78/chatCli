@@ -1,9 +1,21 @@
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
-import { inject, injectable } from "inversify";
+import { inject } from "inversify";
 import { TYPES } from "../../types";
 import { ConversationService } from "../../services/conversation/conversationService";
+import { functionDetails } from "../../decorators/functionalDetails";
 
-@injectable()
+@functionDetails({
+  name: "SaveMessagesCommand",
+  description: "Saves the current conversation to the database",
+  parameters: {
+    args: {
+      type: "array",
+      items: { type: "string "},
+      description: "args[0] is the name to use when saving the conversation"
+    }
+  },
+  required: ["args"],
+})
 export class SaveMessagesCommand implements ICommandStrategy {
   @inject(TYPES.Services.ConversationService) private conversationService: ConversationService;
 

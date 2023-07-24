@@ -1,11 +1,22 @@
-import { inject, injectable } from "inversify";
+import { inject } from "inversify";
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import { readPDFToString } from "../../services/file/fileManager";
 import { ConversationService } from "../../services/conversation/conversationService";
 import { TYPES } from "../../types";
+import { functionDetails } from "../../decorators/functionalDetails";
 
-
-@injectable()
+@functionDetails({
+  name: "ReadPdfCommand",
+  description: "Opens a PDF and adds the text contents as a new message",
+  parameters: {
+    args: {
+      type: "array",
+      items: { type: "string "},
+      description: "args[0] is the name of the PDF to read"
+    }
+  },
+  required: ["args"],
+})
 export class ReadPdfCommand implements ICommandStrategy {
   @inject(TYPES.Services.ConversationService)
   private conversationService: ConversationService;

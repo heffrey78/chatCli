@@ -22,9 +22,10 @@ async function promptUser(): Promise<void> {
 
   rl.on("line", async (line) =>
    {
-    if (line.trim() == ".") {
+    if (line.startsWith(".")) {
       count = count + 1;
       if (count >= 1) {
+        prompt += line;
         const chatHandler = container.get<ICommandStrategy>(TYPES.Command.ChatHandler);
         exit = await chatHandler.execute([prompt]);
         prompt = "";

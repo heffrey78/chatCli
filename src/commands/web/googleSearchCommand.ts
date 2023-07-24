@@ -1,9 +1,21 @@
-import { inject, injectable } from "inversify";
+import { inject } from "inversify";
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import { TYPES, ISearch, SearchResult } from "../../types";
 import { ConversationService } from "../../services/conversation/conversationService";
+import { functionDetails } from "../../decorators/functionalDetails";
 
-@injectable()
+@functionDetails({
+  name: "GoogleSearchCommand",
+  description: "Executes a Google search and returns a list of results",
+  parameters: {
+    args: {
+      type: "array",
+      items: { type: "string "},
+      description: "args[0] is a string containing the search terms"
+    }
+  },
+  required: ["args"],
+})
 export class GoogleSearchCommand implements ICommandStrategy {
   @inject(TYPES.SearchHandler) private search: ISearch;
   @inject(TYPES.Services.ConversationService)

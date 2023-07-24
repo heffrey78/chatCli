@@ -5,6 +5,7 @@ import { ICommandStrategy } from "./interfaces/ICommandStrategy";
 import { SystemInformation } from "./services/system/SystemInformation";
 import { Configuration } from "./config/Configuration";
 import { ConversationService } from "./services/conversation/conversationService";
+import { functionDetailsKey, functionDetails } from "./decorators/functionalDetails";
 
 @injectable()
 class ChatHandler implements ICommandStrategy {
@@ -25,6 +26,16 @@ class ChatHandler implements ICommandStrategy {
   public async execute(
     args: string[]
   ): Promise<boolean> {
+  //   const commands = container.getAll<ICommandStrategy>(TYPES.ICommandStrategy);
+
+  //   const functions = commands.map(command => {
+  //   const functionDetails = Reflect.getMetadata(functionDetailsKey, command.constructor);
+  //   functionDetails.array.forEach((functionalDetail: any) => {
+  //     console.log(JSON.stringify(functionalDetail));
+  //   });
+  // });
+
+
     const parsedPrompt = this.parsePrompt(args[0]);
     const commandName = parsedPrompt
       ? parsedPrompt.command.replace(/[\r\n]/gm, "").toUpperCase()

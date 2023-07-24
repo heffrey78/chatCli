@@ -1,10 +1,22 @@
-import { inject, injectable } from "inversify";
+import { inject } from "inversify";
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import { authorize, listEvents } from "../../services/web/google/calendar";
 import { ConversationService } from "../../services/conversation/conversationService";
 import { TYPES } from "../../types";
+import { functionDetails } from "../../decorators/functionalDetails";
 
-@injectable()
+@functionDetails({
+  name: "GoogleCalendarCommand",
+  description: "Retrieves a list of events from the associated Google Calendar",
+  parameters: {
+    args: {
+      type: "array",
+      items: { type: "string "},
+      description: "args is unused"
+    }
+  },
+  required: ["args"],
+})
 export class GoogleCalendarCommand implements ICommandStrategy {
   @inject(TYPES.Services.ConversationService)
   private conversationService: ConversationService;

@@ -1,10 +1,22 @@
-import { inject, injectable } from "inversify";
+import { inject } from "inversify";
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import extractAndWriteCodeToFile from "../../services/code/codeManager";
 import { ConversationService } from "../../services/conversation/conversationService";
 import { TYPES } from "../../types";
+import { functionDetails } from '../../decorators/functionalDetails';
 
-@injectable()
+@functionDetails({
+  name: "SaveCodeCommand",
+  description: "Parses a message from an array of messages given an index and saves code to an output directory",
+  parameters: {
+    args: {
+      type: "array",
+      items: { type: "string "},
+      description: "args[0] contains the index of the message to process"
+    }
+  },
+  required: ["args"],
+})
 export class SaveCodeCommand implements ICommandStrategy {
   @inject(TYPES.Services.ConversationService)
   private conversationService: ConversationService;

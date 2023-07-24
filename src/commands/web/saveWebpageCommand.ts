@@ -1,10 +1,22 @@
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";import { saveMessagesToFile } from "../../services/file/fileManager";
-import { inject, injectable } from "inversify";
+import { inject } from "inversify";
 import { convertWebpageToPdf } from "../../services/web/webManager";
 import { ConversationService } from "../../services/conversation/conversationService";
 import { TYPES } from "../../types";
+import { functionDetails } from "../../decorators/functionalDetails";
 
-@injectable()
+@functionDetails({
+  name: "SaveWebpageCommand",
+  description: "Saves a web page's contents to PDF",
+  parameters: {
+    args: {
+      type: "array",
+      items: { type: "string "},
+      description: "args[0] is a string containing the web page's url"
+    }
+  },
+  required: ["args"],
+})
 export class SaveWebpageCommand implements ICommandStrategy {  
   @inject(TYPES.Services.ConversationService)
   private conversationService: ConversationService;

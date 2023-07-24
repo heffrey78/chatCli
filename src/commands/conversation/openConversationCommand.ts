@@ -1,9 +1,21 @@
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
-import { inject, injectable } from "inversify";
+import { inject } from "inversify";
 import { TYPES } from "../../types";
 import { ConversationService } from "../../services/conversation/conversationService";
+import { functionDetails } from "../../decorators/functionalDetails";
 
-@injectable()
+@functionDetails({
+  name: "OpenMessagesCommand",
+  description: "Opens a conversation from the database by conversation name",
+  parameters: {
+    args: {
+      type: "array",
+      items: { type: "string "},
+      description: "args[0] is the name of the conversation to open"
+    }
+  },
+  required: ["args"],
+})
 export class OpenMessagesCommand implements ICommandStrategy {
   @inject(TYPES.Services.ConversationService) private conversationService: ConversationService;
 

@@ -4,8 +4,20 @@ import { TYPES } from "../../types";
 import { OpenAiClient } from '../../services/openai/openAiClient';
 import { saveJsonFile } from "../../services/file/fileManager";
 import { ConversationService } from '../../services/conversation/conversationService';
+import { functionDetails } from '../../decorators/functionalDetails';
 
-@injectable()
+@functionDetails({
+  name: "GetEmbeddingCommand",
+  description: "Calls the OpenAI Embeddings API with a string to embed.",
+  parameters: {
+    args: {
+      type: "array",
+      items: { type: "string "},
+      description: "args[0] contains the string to embed"
+    }
+  },
+  required: ["args"],
+})
 export class GetEmbeddingCommand implements ICommandStrategy {
   @inject(TYPES.AiClient) private aiClient: OpenAiClient;
   @inject(TYPES.Services.ConversationService)

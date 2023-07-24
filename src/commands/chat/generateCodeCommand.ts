@@ -1,11 +1,23 @@
-import { injectable, inject } from 'inversify';
+import { inject } from 'inversify';
 import { TYPES } from "../../types";
 import { OpenAiClient } from '../../services/openai/openAiClient';
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
 import { ConversationService } from '../../services/conversation/conversationService';
 import { SystemInformation } from '../../services/system/SystemInformation';
+import { functionDetails } from '../../decorators/functionalDetails';
 
-@injectable()
+@functionDetails({
+  name: "GenerateCodeCommand",
+  description: "Calls the OpenAI Completions API with a system message focused on software development and a prompt.",
+  parameters: {
+    args: {
+      type: "array",
+      items: { type: "string "},
+      description: "args[0] contains the chat prompt"
+    }
+  },
+  required: ["args"],
+})
 export class GenerateCodeCommand implements ICommandStrategy {
   @inject(TYPES.SystemInformation) private systemInformation: SystemInformation;
   @inject(TYPES.AiClient) private aiClient: OpenAiClient;

@@ -37,15 +37,11 @@ USE_POSTGRES=true
 Currently, Postgres is only used for saving and opening conversations. You can run the postgres container that support pg-vector by running the docker run command below. If you don't use postgres, conversations will be stored to json. Eventually, the program will use postgres more extensivley and json support will be relegated to exporting conversations.
 
 ### Docker notes
-
 docker pull ankane/pgvector
 
 docker run --name chat-postgres -e POSTGRES_PASSWORD=BigBlockRed15! -e PGDATA=/var/lib/postgresql/data/pgdata -v postgres-data:/var/lib/postgresql/data -p 5432:5432 --rm ankane/pgvector
 
-### Postgres and TypeORM
-*Generate a migration from entity changes*
-npx typeorm-ts-node-esm migration:generate ./src/migration/{update-class-name} -d ./src/data-source.ts
-
+### Postgres
 *Query sql from terminal*
 psql.exe "host=localhost port=5432 dbname=chatcli user=postgres sslmode=prefer connect_timeout=10"
 

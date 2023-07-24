@@ -1,11 +1,23 @@
 import { ICommandStrategy } from "../../interfaces/ICommandStrategy";
-import { inject, injectable } from "inversify";
+import { inject } from "inversify";
 import {} from "inversify/lib/constants/metadata_keys";
 import { TYPES, ConversationRepository } from "../../types";
 import { IConfiguration } from "../../interfaces/IConfiguration";
 import { ConversationService } from "../../services/conversation/conversationService";
+import { functionDetails } from "../../decorators/functionalDetails";
 
-@injectable()
+@functionDetails({
+  name: "ImportConversationCommand",
+  description: "Imports a conversation from json to the database",
+  parameters: {
+    args: {
+      type: "array",
+      items: { type: "string "},
+      description: "args[0] is the name of the json file to import"
+    }
+  },
+  required: ["args"],
+})
 export class ImportConversationCommand implements ICommandStrategy {
   configuration: IConfiguration;
   repositoryFactory: (named: string) => ConversationRepository;
