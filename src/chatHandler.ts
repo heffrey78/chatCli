@@ -84,7 +84,7 @@ class ChatHandler implements ICommandStrategy {
       }
 
       return { command, args, argText };
-    }
+    } 
   }
 }
 
