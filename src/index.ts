@@ -34,10 +34,6 @@ async function promptUser(): Promise<void> {
           rl.close();
         }
       }
-    } else if (line.startsWith("#")) {
-      prompt = "";
-      console.clear();
-      process.stdout.write("> ");
     } else if (line.trim() !== "") {
       count = 0;
       prompt += line + "\n";

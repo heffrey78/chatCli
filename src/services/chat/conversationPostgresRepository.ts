@@ -42,15 +42,46 @@ export class ConversationPostgresRepository implements ConversationRepository {
     messages: MessageDto[],
     conversationId: number
   ): Promise<void> {
-    for (const message of messages) {
-      if (!message.id || message.id === null) {
-        await Message.create({
+    const existingMessages = await Message.findAll({
+      where: {
+        conversationId: conversationId,
+      },
+    });
+
+    const existingMessageIds = existingMessages.map((message) => message.id);
+    const retainedMessageIds = messages
+      .filter((message) => message.id !== undefined)
+      .map((message) => message.id);
+
+    const messagesToDelete = existingMessages.filter(
+      (message) => !retainedMessageIds.includes(message.id)
+    );
+
+    const messagesToSave = messages.filter(
+      (message) => message.id === undefined
+    );
+
+    const messagesToUpdate = messages.filter(
+      (message) => message.id !== undefined && existingMessageIds.includes(message.id)
+    );
+
+    await Promise.all(
+      messagesToDelete.map((message) => message.destroy())
+    );
+
+    await Promise.all(
+      messagesToSave.map((message) =>
+        Message.create({
           role: message.role,
           content: message.content,
           conversationId: conversationId,
-        });
-      } else {
-        await Message.update(
+        })
+      )
+    );
+
+    await Promise.all(
+      messagesToUpdate.map((message) =>
+        Message.update(
           {
             role: message.role,
             content: message.content,
@@ -62,9 +93,9 @@ export class ConversationPostgresRepository implements ConversationRepository {
             },
             returning: true,
           }
-        );
-      }
-    }
+        )
+      )
+    );
   }
 
   async load(name: string): Promise<ConversationDto> {

@@ -42,6 +42,7 @@ import { JiraQueryCommand } from "./commands/web/jiraQueryCommand";
 import { ConversationDto } from "./dtos/ConversationDto";
 import { ContextDto } from "./dtos/ContextDto";
 import { ConversationService } from "./services/conversation/conversationService";
+import { RemoveMessageCommand } from "./commands/conversation/removeMessageCommand";
 
 const container = new Container();
 
@@ -148,6 +149,10 @@ container
 container
   .bind<ICommandStrategy>(TYPES.Command.READPDF)
   .to(ReadPdfCommand)
+  .inSingletonScope();
+  container
+  .bind<ICommandStrategy>(TYPES.Command.REMOVE)
+  .to(RemoveMessageCommand)
   .inSingletonScope();
 container
   .bind<ICommandStrategy>(TYPES.Command.SAVE)

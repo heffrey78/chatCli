@@ -19,6 +19,7 @@ const TYPES = {
     CONVERSATIONS: Symbol.for("ListConversationsCommand"),
     OPEN: Symbol.for("OpenMessagesCommand"),
     READPDF: Symbol.for("ReadPdfCommand"),
+    REMOVE: Symbol.for("RemoveMessageCommand"),
     SAVE: Symbol.for("SaveMessagesCommand"),
     SAVEPAGE: Symbol.for("SaveWebpageCommand"),
     SAVECODE: Symbol.for("SaveCodeCommand"),
@@ -72,6 +73,16 @@ export interface IMessage {
   role: string;
   content: string;
   conversationId: number;
+}
+
+export interface IWorkItem {
+  id: number;
+  description: string;
+  parentWorkItemId: number;
+  childWorkItemIds: number[];
+  status: string;
+  assignee: string;
+  execution: string;
 }
 
 export interface IConfig {

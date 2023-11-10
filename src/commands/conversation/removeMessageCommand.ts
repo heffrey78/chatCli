@@ -5,18 +5,18 @@ import { TYPES } from "../../types";
 import { functionDetails } from "../../decorators/functionalDetails";
 
 @functionDetails({
-  name: "ClearConversationCommand",
-  description: "Clears the current conversation",
+  name: "RemoveMessageCommand",
+  description: "Removes a message from a conversation",
   parameters: {
     args: {
       type: "array",
       items: { type: "string "},
-      description: "args is unused"
+      description: "args[0] is the index of the message to remove"
     }
   },
   required: ["args"],
 })
-export class ClearConversationCommand implements ICommandStrategy {
+export class RemoveMessageCommand implements ICommandStrategy {
   @inject(TYPES.Services.ConversationService)
   private conversationService: ConversationService;
 
@@ -24,12 +24,15 @@ export class ClearConversationCommand implements ICommandStrategy {
     @inject(TYPES.Services.ConversationService)
     conversationService: ConversationService
   ) {
-    this.conversationService = conversationService;
+this.conversationService = conversationService;
   }
-
+  
   async execute(args: string[]): Promise<boolean> {
-    this.conversationService.clear();
-    console.clear();
+    if(args[0]) {
+        let numberFromString: number = parseInt(args[0]);
+        this.conversationService.remove(numberFromString);
+    }
+    
     return false;
   }
 }

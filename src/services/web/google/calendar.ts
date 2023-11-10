@@ -3,19 +3,12 @@ import path from 'path';
 import { authenticate } from '@google-cloud/local-auth';
 import { google, calendar_v3, Auth } from 'googleapis';
 
-// If modifying these scopes, delete token.json.
+const CALENDAR_ID = 'primary';
+const TIME_ZONE = 'America/Los_Angeles';
 const SCOPES: string[] = ['https://www.googleapis.com/auth/calendar.readonly'];
-// The file token.json stores the user's access and refresh tokens, and is
-// created automatically when the authorization flow completes for the first
-// time.
 const TOKEN_PATH = path.join(process.cwd(), 'token.json');
 const CREDENTIALS_PATH = './credentials.json';
 
-/**
- * Reads previously authorized credentials from the save file.
- *
- * @return {Promise<Auth.OAuth2Client|null>}
- */
 async function loadSavedCredentialsIfExist(): Promise<Auth.OAuth2Client | null> {
   try {
     const content = await fs.readFile(TOKEN_PATH);
@@ -26,12 +19,6 @@ async function loadSavedCredentialsIfExist(): Promise<Auth.OAuth2Client | null> 
   }
 }
 
-/**
- * Serializes credentials to a file compatible with GoogleAUth.fromJSON.
- *
- * @param {Auth.OAuth2Client} client
- * @return {Promise<void>}
- */
 async function saveCredentials(client: Auth.OAuth2Client): Promise<void> {
   const content = await fs.readFile(CREDENTIALS_PATH);
   const keys: any = JSON.parse(content.toString());
@@ -45,10 +32,6 @@ async function saveCredentials(client: Auth.OAuth2Client): Promise<void> {
   await fs.writeFile(TOKEN_PATH, payload);
 }
 
-/**
- * Load or request or authorization to call APIs.
- *
- */
 export async function authorize(): Promise<Auth.OAuth2Client> {
   let client = await loadSavedCredentialsIfExist();
   if (client) {
@@ -67,30 +50,30 @@ export async function authorize(): Promise<Auth.OAuth2Client> {
   return client;
 }
 
-/**
- * Lists the next 10 events on the user's primary calendar.
- * @param {Auth.OAuth2Client} auth An authorized OAuth2 client.
- */
 export async function listEvents(auth: Auth.OAuth2Client): Promise<void> {
-  const calendar: calendar_v3.Calendar = google.calendar({ version: 'v3', auth });
-  const res = await calendar.events.list({
-    calendarId: 'primary',
-    timeMin: new Date().toISOString(),
-    maxResults: 10,
-    singleEvents: true,
-    orderBy: 'startTime',
-  });
+  try {
+    const calendar: calendar_v3.Calendar = google.calendar({ version: 'v3', auth });
+    const res = await calendar.events.list({
+      calendarId: CALENDAR_ID,
+      timeMin: new Date().toISOString(),
+      maxResults: 10,
+      singleEvents: true,
+      orderBy: 'startTime',
+      timeZone: TIME_ZONE,
+    });
 
-  const events = res.data.items;
-  if (!events || events.length === 0) {
-    console.log('No upcoming events found.');
-    return;
+    const events = res.data.items;
+    if (!events || events.length === 0) {
+      console.log('No upcoming events found.');
+      return;
+    }
+
+    console.log('Upcoming 10 events:');
+    events.map((event, i) => {
+      const start = event.start?.dateTime || event.start?.date;
+      console.log(`${start} - ${event.summary}`);
+    });
+  } catch (err) {
+    console.error('Error retrieving events:', err);
   }
-
-  console.log('Upcoming 10 events:');
-  events.map((event, i) => {
-    const start = event.start?.dateTime || event.start?.date;
-    console.log(`${start} - ${event.summary}`);
-  });
 }
-

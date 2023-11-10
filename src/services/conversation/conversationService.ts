@@ -102,4 +102,8 @@ export class ConversationService {
     this.conversation = new ConversationDto();
     this.conversation.messages = [];
   }
+
+  remove(index: number) {
+    this.conversation.messages.splice(index, 1);
+  }
 }
