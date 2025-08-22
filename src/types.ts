@@ -14,6 +14,7 @@ const TYPES = {
     GOOGLE: Symbol.for("GoogleSearchCommand"),
     IMAGE: Symbol.for("CreateDallECommand"),
     IMPORT: Symbol.for("ImportMessageCommand"),
+    HELP: Symbol.for("GetHelpCommand"),
     JIRA: Symbol.for("JiraQueryCommand"),
     LIST: Symbol.for("ListMessagesCommand"),
     CONVERSATIONS: Symbol.for("ListConversationsCommand"),

@@ -55,6 +55,7 @@ async function startup(): Promise<void> {
   if(process.env.USE_POSTGRES === "true") {
     await sequelize.authenticate();
     await sequelize.sync();
+    await sequelize.query('CREATE EXTENSION IF NOT EXISTS vector');
     await promptUser();  
   } 
 }

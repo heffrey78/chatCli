@@ -15,6 +15,7 @@ import { SaveMessagesCommand } from "./commands/conversation/saveConversationCom
 import { ExecuteShellCommand } from "./commands/system/shell/executeShellCommand";
 import { GoogleSearchCommand } from "./commands/web/googleSearchCommand";
 import { SaveWebpageCommand } from "./commands/web/saveWebpageCommand";
+import { GetHelpCommand } from "./commands/help/getHelpCommand";
 import { Configuration } from "./config/Configuration";
 import { IConfiguration } from "./interfaces/IConfiguration";
 import { ISystemInformation } from "./interfaces/system/ISystemInformation";
@@ -182,6 +183,10 @@ container
 container
   .bind<ICommandStrategy>(TYPES.Command.GenerateChatCommand)
   .to(GenerateChatCommand)
+  .inSingletonScope();
+  container
+  .bind<ICommandStrategy>(TYPES.Command.HELP)
+  .to(GetHelpCommand)
   .inSingletonScope();
 
 container

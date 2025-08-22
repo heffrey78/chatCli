@@ -64,20 +64,31 @@ async function createFolderIfNotExists(directoryPath: string): Promise<void> {
   }
 }
 
-async function executeShellScript(filePath: string): Promise<string | void> {
+async function executeShellScript(filePath: string): Promise<string> {
   const systemInfo = container.get<ISystemInformation>(TYPES.SystemInformation);
-  let shellCommand = "";
-  if (systemInfo.platform === "win32") {
-    shellCommand = "cmd.exe /c";
-  } else {
-    shellCommand = "bash";
+  
+  let shellCommand: string;
+  switch (systemInfo.platform) {
+    case "win32":
+      shellCommand = "cmd.exe /c";
+      break;
+    case "darwin": // macOS
+    case "linux":
+      shellCommand = "bash";
+      break;
+    default:
+      throw new Error(`Unsupported platform: ${systemInfo.platform}`);
   }
+
   try {
-    const result = await execPromise(`${shellCommand} ${filePath}`);
-    return result.stdout;
+    const { stdout, stderr } = await execPromise(`${shellCommand} "${filePath}"`);
+    if (stderr) {
+      console.warn(`Script execution produced stderr output: ${stderr}`);
+    }
+    return stdout.trim();
   } catch (err) {
-    console.error(`Error: ${err}`);
-    return;
+    console.error(`Error executing shell script: ${err}`);
+    throw err; // Re-throw the error for better error handling upstream
   }
 }
 

@@ -12,12 +12,15 @@ import {
   Association,
   Sequelize,
 } from "sequelize";
+import pgvector from 'pgvector/sequelize';
 
 dotenv.config();
 
 const dbName = process.env.DB_NAME;
 const userName = process.env.DB_USERNAME;
 const password = process.env.DB_PASSWORD;
+
+pgvector.registerType(Sequelize);
 
 if (!dbName || !userName || !password) throw new Error("No db creds");
 

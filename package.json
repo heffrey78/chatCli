@@ -25,10 +25,11 @@
       "pdfjs-dist": "^3.8.162",
       "pg": "^8.4.0",
       "pg-hstore": "^2.3.4",
+      "pgvector": "^0.1.5",
       "puppeteer": "^20.1.1",
       "puppeteer-core": "^21.4.0",
       "reflect-metadata": "^0.1.13",
-      "sequelize": "^6.32.1"
+      "sequelize": "^6.33.0"
    },
    "devDependencies": {
       "@types/axios": "^0.14.0",

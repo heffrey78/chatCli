@@ -6,18 +6,18 @@ import { ConversationService } from '../../services/conversation/conversationSer
 import { functionDetails } from "../../decorators/functionalDetails";
 
 @functionDetails({
-  name: "CreateDallECommand",
-  description: "Calls the OpenAI DALL-E generations endpoint creating 2 varations based on a prompt, adding the image urls to a new message",
-  parameters: {
-    args: {
-      type: "array",
-      items: { type: "string "},
-      description: "args[0] is the image generation prompt"
-    }
-  },
-  required: ["args"],
-})
-export class CreateDallECommand implements ICommandStrategy {
+    name: "GetHelpCommand",
+    description: "Gets a list of all of the commands available",
+    parameters: {
+      args: {
+        type: "array",
+        items: { type: "string "},
+        description: "No args required"
+      }
+    },
+    required: ["args"],
+  })
+export class GetHelpCommand implements ICommandStrategy {
   @inject(TYPES.AiClient) private aiClient: OpenAiClient;
   @inject(TYPES.Services.ConversationService)
   private conversationService: ConversationService;
@@ -26,19 +26,21 @@ export class CreateDallECommand implements ICommandStrategy {
     @inject(TYPES.AiClient) aiClient: OpenAiClient,
     @inject(TYPES.Services.ConversationService)
     conversationService: ConversationService
-    ) {
+  ) {
     this.aiClient = aiClient;
     this.conversationService = conversationService;
   }
 
   async execute(args: string[]): Promise<boolean> {
-    const imgageUrls = await this.aiClient.generateImage(args[0]);
-    this.conversationService.addMessage("assistant", imgageUrls.toString()); 
-    console.log('Images generated: ');
-    imgageUrls.forEach((imageUrl) => {
-      console.log(imageUrl);
-    });
+    // Assuming the TYPES object has an array of all command names under a symbol for commands
+    const commandNames = Object.keys(TYPES.Command).map((symbol) => (symbol as keyof typeof TYPES.Command));
+    
+    let helpText = `Available Commands:\n`;
+    helpText += commandNames.join("\n");
+    console.log(helpText);
 
-    return false;
+    this.conversationService.addMessage("assistant", helpText); 
+
+    return false; // Returning true or false based on your desired behavior, for simplicity, returning false here.
   }
 }

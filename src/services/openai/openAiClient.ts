@@ -46,8 +46,9 @@ class OpenAiClient implements IAIClient {
 
   async generateImage(prompt: string): Promise<string[]> {
     const response = await this.openAiApiClient.images.generate({
+      model: "dall-e-3",
       prompt: prompt,
-      n: 2,
+      n: 1,
       size: "1024x1024",
     });
 
